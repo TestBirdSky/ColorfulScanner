@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Colorful Scanner</string>
+    <string name="main_null_file_tips">No document, please click“+”to scan the document you need!</string>
+    <string name="text_done">Done</string>
+</resources>
