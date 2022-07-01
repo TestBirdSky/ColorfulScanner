@@ -2,4 +2,13 @@
     <string name="app_name">Colorful Scanner</string>
     <string name="main_null_file_tips">No document, please click“+”to scan the document you need!</string>
     <string name="text_done">Done</string>
+    <string name="build_folder">New Folder</string>
+    <string name="input_name_tips">Please enter a name</string>
+    <string name="create_folder_failed">Failed to create folder</string>
+    <string name="rename_folder_failed">Rename failed</string>
+    <string name="filename_repeat">filename already exists</string>
+    <string name="common_rename">Rename</string>
+    <string name="move_file_title">Move to</string>
+    <string name="move_file_error">Unable to select all files for move</string>
+    <string name="move_file_failed">File move failed</string>
 </resources>

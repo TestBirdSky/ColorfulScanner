@@ -14,5 +14,6 @@ class CSApp : Application() {
     override fun onCreate() {
         super.onCreate()
         mApp = this
+        registerActivityLifecycleCallbacks(CSACL())
     }
 }

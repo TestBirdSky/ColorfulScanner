@@ -5,6 +5,9 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 
 /**
  * Date：2022/6/29
@@ -31,4 +34,11 @@ fun Activity.toNexAct(
         startActivity(intent)
     }
     return this
+}
+
+fun ImageView.loadImage(uri: String) {
+    Glide.with(this).applyDefaultRequestOptions(
+        RequestOptions().placeholder(R.drawable.ic_item_placeholder)
+            .error(R.drawable.ic_item_placeholder)
+    ).load(uri).into(this)
 }

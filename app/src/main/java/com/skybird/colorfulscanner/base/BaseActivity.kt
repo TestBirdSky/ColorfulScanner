@@ -1,21 +1,20 @@
 package com.skybird.colorfulscanner.base
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
-import android.graphics.Color
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.view.WindowManager
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import com.skybird.colorfulscanner.setTransparentStatusBar
+import com.gyf.immersionbar.ImmersionBar
+import com.skybird.colorfulscanner.R
 
 /**
  * Date：2022/6/29
  * Describe:
  */
 abstract class BaseActivity : AppCompatActivity() {
-
-    abstract fun layoutId(): Int?
+    protected var isUseDataBinding = false
+    abstract fun layoutId(): Int
 
     abstract fun initUI()
 
@@ -24,10 +23,11 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         density()
-        layoutId()?.let { setContentView(it) }
-
+        if (!isUseDataBinding) {
+            setContentView(layoutId())
+        }
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        setTransparentStatusBar()
+        setStatusBarTransparent()
         initUI()
         initData()
     }
@@ -39,5 +39,19 @@ abstract class BaseActivity : AppCompatActivity() {
         metrics.density = td
         metrics.scaledDensity = td
         metrics.densityDpi = dpi
+    }
+
+    private fun setStatusBarTransparent() {
+        findViewById<View>(R.id.title_layout)?.run {
+            setPadding(
+                paddingLeft,
+                ImmersionBar.getStatusBarHeight(this@BaseActivity),
+                paddingRight,
+                paddingBottom
+            )
+        }
+        ImmersionBar.with(this)
+            .statusBarDarkFont(true)
+            .init()
     }
 }
