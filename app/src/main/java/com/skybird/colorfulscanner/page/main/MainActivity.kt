@@ -1,10 +1,13 @@
 package com.skybird.colorfulscanner.page.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.hjq.permissions.OnPermissionCallback
+import com.hjq.permissions.XXPermissions
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityMainBinding
@@ -13,6 +16,7 @@ import com.skybird.colorfulscanner.page.*
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
+import com.skybird.colorfulscanner.utils.REQUIRED_CAMERA_PERMISSIONS
 import java.io.File
 
 class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
@@ -38,7 +42,6 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     override fun initData() {
         mViewModel.run {
-            refreshCurFolderData(mCurFolderPath)
             curFileUiData.observe(this@MainActivity, {
                 LogCSI("data change size==>${it.size}")
                 mAdapter.refreshAllData(it)
@@ -63,6 +66,25 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             }
             addPicture.setOnClickListener {
                 LogCSI("addPicture")
+                XXPermissions.with(this@MainActivity).permission(
+                    REQUIRED_CAMERA_PERMISSIONS
+                ).request(object : OnPermissionCallback {
+                    override fun onGranted(permissions: MutableList<String>?, all: Boolean) {
+                        if (all) {
+                            toNexAct(TakePhotoActivity::class.java)
+                        }
+                    }
+
+                    override fun onDenied(permissions: MutableList<String>?, never: Boolean) {
+                        super.onDenied(permissions, never)
+                        if (never) {
+
+                        } else {
+                            ToastUtils.showShort(getString(R.string.failed_permission))
+                        }
+                    }
+                })
+
             }
             editFile2.setOnClickListener {
                 mAdapter.isShowEditList = true
@@ -80,7 +102,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 //                showNormalUi()
 //            }
             ivSetting.setOnClickListener {
-
+                toNexAct(SettingActivity::class.java)
             }
             ivMove.setOnClickListener {
                 val checkList = mAdapter.getAllCheckEdList()
@@ -91,7 +113,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     toNexAct(MoveFileActivity::class.java, Bundle().apply {
                         putSerializable("moveFile", checkList)
                         putSerializable("noCheckedFile", noCheckFile)
-                    })
+                    }, 1000)
                 }
             }
             ivDel.setOnClickListener {
@@ -105,7 +127,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         }
         mAdapter.itemClickListener = ItemClickListener {
             if (it.fileType == FileType.FOLDER) {
-                mViewModel.refreshCurFolderData(it.filePath)
+                mViewModel.refreshFolderData(it.filePath)
             } else {
 
             }
@@ -196,7 +218,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 super.onBackPressed()
             } else {
                 FileUtils.getFileByPath(mCurFolderPath).parent?.let {
-                    mViewModel.refreshCurFolderData(
+                    mViewModel.refreshFolderData(
                         it
                     )
                 }
@@ -204,4 +226,8 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        mViewModel.refreshFolderData(mCurFolderPath)
+    }
 }

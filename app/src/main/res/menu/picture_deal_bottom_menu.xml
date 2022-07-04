@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/del"
+        android:icon="@drawable/ic_picture_del"
+        android:title="@string/picture_delete" />
+    <item
+        android:id="@+id/tailor"
+        android:icon="@drawable/ic_tailor"
+        android:title="@string/picture_tailor" />
+    <item
+        android:id="@+id/rotate"
+        android:icon="@drawable/ic_rotate"
+        android:title="@string/picture_rotate" />
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/ic_fliter"
+        android:title="@string/picture_filter" />
+
+    <item
+        android:id="@+id/share"
+        android:icon="@drawable/ic_picture_share"
+        android:title="@string/picture_share" />
+</menu>

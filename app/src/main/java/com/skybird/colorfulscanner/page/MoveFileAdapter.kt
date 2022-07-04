@@ -6,6 +6,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.databinding.ItemMoveFileBinding
+import com.skybird.colorfulscanner.page.main.ItemClickListener
 
 /**
  * Date：2022/7/1

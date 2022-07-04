@@ -7,4 +7,4 @@
 //    }
 //}
 rootProject.name = "Colorful Scanner"
-include (":app")
+include (":app",":cropper")

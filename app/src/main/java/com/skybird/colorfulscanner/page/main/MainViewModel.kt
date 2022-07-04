@@ -19,7 +19,7 @@ class MainViewModel : ViewModel() {
 
     val curFileUiData = MutableLiveData<ArrayList<FileUiBean>>()
 
-    fun refreshCurFolderData(folder: String) {
+    fun refreshFolderData(folder: String) {
         curFileUiData.value = DataConversionUtils.fileToFileUiBean(
             CSFileUtils.getAllFileByFileName(
                 folder

@@ -1,4 +1,4 @@
-package com.skybird.colorfulscanner.page
+package com.skybird.colorfulscanner.page.main
 
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.loadImage
+import com.skybird.colorfulscanner.page.FileUiBean
 import com.skybird.colorfulscanner.utils.LogCSI
 
 /**
@@ -60,9 +61,7 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
                 }
             }
             tvName.setOnClickListener {
-                if (isShowEditList) {
-                    itemNameClickListener?.onClick(bean)
-                }
+                itemNameClickListener?.onClick(bean)
             }
         }
     }
@@ -70,13 +69,13 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): MainListAdapter.MyViewHolder {
+    ): MyViewHolder {
         return MyViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.main_list_item, parent, false)
         )
     }
 
-    override fun onBindViewHolder(holder: MainListAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         holder.bind(data[position])
     }
 

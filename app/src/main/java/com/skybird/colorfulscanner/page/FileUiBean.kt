@@ -1,5 +1,6 @@
 package com.skybird.colorfulscanner.page
 
+import com.skybird.colorfulscanner.page.main.FileType
 import java.io.Serializable
 import kotlin.random.Random
 

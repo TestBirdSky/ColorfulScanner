@@ -11,4 +11,21 @@
     <string name="move_file_title">Move to</string>
     <string name="move_file_error">Unable to select all files for move</string>
     <string name="move_file_failed">File move failed</string>
+    <string name="setting_title">Setting</string>
+    <string name="setting_contact_us">Contact us</string>
+    <string name="setting_privacy">Privacy agreement</string>
+    <string name="setting_share">Share</string>
+    <string name="failed_permission">Failed to obtain permission</string>
+    <string name="take_photo_failed">Failed to take photo</string>
+    <string name="picture_share">Share</string>
+    <string name="picture_filter">Filter</string>
+    <string name="picture_rotate">Rotate</string>
+    <string name="picture_tailor">Tailor</string>
+    <string name="picture_delete">Delete</string>
+
+    <!-- 需要修改的配置   -->
+    <string name="contact_email">email//</string>
+    <string name="privacy_url">http://www.baidu.com</string>
+    <string name="facebook_app_id"> facebook id</string>
+    <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
 </resources>

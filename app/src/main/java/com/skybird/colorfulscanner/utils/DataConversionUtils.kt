@@ -1,7 +1,7 @@
 package com.skybird.colorfulscanner.utils
 
 import com.blankj.utilcode.util.FileUtils
-import com.skybird.colorfulscanner.page.FileType
+import com.skybird.colorfulscanner.page.main.FileType
 import com.skybird.colorfulscanner.page.FileUiBean
 import java.io.File
 

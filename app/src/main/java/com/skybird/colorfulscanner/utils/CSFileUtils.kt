@@ -39,6 +39,10 @@ object CSFileUtils {
         return isSuccess
     }
 
+//    fun createTextFile(filePath: String,fileName: String):Boolean{
+//
+//    }
+
     fun renameFolder(newName: String, oldName: String, parentPath: String): Boolean {
         val newPath = parentPath + File.separator + newName
         val oldPath = parentPath + File.separator + oldName
@@ -68,5 +72,18 @@ object CSFileUtils {
             options.outWidth != -1 && options.outHeight != -1 -> true
             else -> false
         }
+    }
+
+    fun move(
+        srcPath: String,
+        destPath: String
+    ): Boolean {
+        val file = FileUtils.getFileByPath(srcPath)
+        var tempDestPath = destPath
+        if (file.isDirectory) {
+            tempDestPath = tempDestPath + File.separator + file.name
+        }
+        LogCSI("tempDestPath$tempDestPath ---$srcPath")
+        return FileUtils.move(srcPath, tempDestPath)
     }
 }

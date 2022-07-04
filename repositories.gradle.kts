@@ -6,4 +6,5 @@ rootProject.extra.apply {
 repositories {
     google()
     jcenter()
+    maven { setUrl("https://jitpack.io") }
 }

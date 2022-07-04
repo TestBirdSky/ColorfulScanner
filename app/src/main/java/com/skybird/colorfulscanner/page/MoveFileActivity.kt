@@ -36,12 +36,13 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
                     lifecycleScope.launch(Dispatchers.Main) {
                         var isSuccess = false
                         moveFileList.forEach {
-                            if (FileUtils.move(it.filePath, mAdapter.curSelectFilePath)) {
+                            if (CSFileUtils.move(it.filePath, mAdapter.curSelectFilePath)) {
                                 isSuccess = true
                             }
                             LogCSI("isSuccess==$isSuccess --${it.filePath}--\n-${mAdapter.curSelectFilePath}")
                         }
                         if (isSuccess) {
+                            setResult(RESULT_OK)
                             onBackPressed()
                         } else {
                             ToastUtils.showShort(R.string.move_file_failed)
