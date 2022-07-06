@@ -11,4 +11,18 @@
         <item name="android:textSize">9sp</item>
     </style>
 
+
+    <style name="BottomShareDialogStyle" parent="android:Theme.Holo.Light.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowMinWidthMajor">100%</item><!-- 这为最宽100% -->
+        <!-- 设置有遮罩层 -->
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
 </resources>

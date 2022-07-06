@@ -42,8 +42,11 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
             if (bean.fileType == FileType.FOLDER) {
                 ivNull.visibility = View.VISIBLE
                 tvName.text = bean.fileName
+                iv.visibility = View.INVISIBLE
             } else {
+                tvName.text = ""
                 ivNull.visibility = View.GONE
+                iv.visibility = View.VISIBLE
                 iv.loadImage(bean.filePath)
             }
             if (isShowEditList) {
@@ -83,11 +86,29 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
         return data.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return data[position].id
+    }
+
     fun refreshAllData(datas: ArrayList<FileUiBean>) {
         data.clear()
         data.addAll(datas)
         submitList(datas)
+        LogCSI("refreshAllData---${datas.size}")
+        datas.forEach {
+            LogCSI("$it")
+        }
         notifyDataSetChanged()
+    }
+
+    fun getAllImageUrl(): List<String> {
+        val arrayList = arrayListOf<String>()
+        data.forEach {
+            if (it.fileType == FileType.IMAGE) {
+                arrayList.add(it.filePath)
+            }
+        }
+        return arrayList
     }
 
     val noCheckEdFileList = arrayListOf<FileUiBean>()
@@ -108,17 +129,17 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
 
 class DiffUI : DiffUtil.ItemCallback<FileUiBean>() {
     override fun areItemsTheSame(oldItem: FileUiBean, newItem: FileUiBean): Boolean {
-        LogCSI("areItemsTheSame--->  ${oldItem.filePath}--${newItem.filePath}")
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: FileUiBean, newItem: FileUiBean): Boolean {
-        LogCSI("areContentsTheSame--->  ${oldItem.filePath}--${newItem.filePath}")
-        return (oldItem.fileName == newItem.fileName
+        val isSame = (oldItem.fileName == newItem.fileName
                 && oldItem.pictureNum == newItem.pictureNum
                 && oldItem.filePath == newItem.filePath
                 && oldItem.isChecked == newItem.isChecked
                 && oldItem.fileType == newItem.fileType)
+        LogCSI("areContentsTheSame---> $isSame ---${oldItem}--${newItem}")
+        return isSame
     }
 }
 

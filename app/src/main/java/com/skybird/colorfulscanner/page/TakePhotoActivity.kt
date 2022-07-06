@@ -2,9 +2,13 @@ package com.skybird.colorfulscanner.page
 
 import android.annotation.SuppressLint
 import android.content.ContentValues
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -12,6 +16,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.AcTakePhotoBinding
+import com.skybird.colorfulscanner.page.picturedeal.PictureDealActivity
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.LogCSE
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -24,6 +29,10 @@ import java.util.*
  */
 class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
     private var imageCapture: ImageCapture? = null
+    private val startForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            result(it)
+        }
 
     override fun layoutId() = R.layout.ac_take_photo
 
@@ -34,7 +43,10 @@ class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
                 onBackPressed()
             }
             ivNineGrid.setOnCheckedChangeListener { buttonView, isChecked ->
-
+                nineLayout.visibility = if (isChecked) View.VISIBLE else View.GONE
+            }
+            ivPhotoAlbum.setOnClickListener {
+                pickImageFromGallery()
             }
             btnFlashlight.setOnCheckedChangeListener { buttonView, isChecked ->
                 imageCapture?.camera?.cameraControl?.enableTorch(isChecked)
@@ -130,6 +142,7 @@ class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
                     binding.ivTakePhoto.isClickable = true
                     toNexAct(PictureDealActivity::class.java, Bundle().apply {
                         putString("picture_uri", output.savedUri.toString())
+                        putBoolean("is_can_del_cur_uri", true)
                     })
                     LogCSI(msg)
                 }
@@ -137,4 +150,29 @@ class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
         )
     }
 
+
+    private fun pickImageFromGallery() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+            .setType("image/*")
+            .addCategory(Intent.CATEGORY_OPENABLE)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            val mimeTypes = arrayOf("image/jpeg", "image/png")
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes)
+        }
+        startForResult.launch(intent)
+    }
+
+    private fun result(aResult: ActivityResult) {
+        if (aResult.resultCode == RESULT_OK) {
+            val uri = aResult.data?.data
+            if (uri != null) {
+                toNexAct(PictureDealActivity::class.java, Bundle().apply {
+                    putString("picture_uri", uri.toString())
+                })
+            } else {
+                ToastUtils.showShort(R.string.select_photo_error)
+            }
+        }
+    }
 }

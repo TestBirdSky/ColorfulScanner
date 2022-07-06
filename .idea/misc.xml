@@ -4,16 +4,26 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/bg_cancel.xml" value="0.3802083333333333" />
+        <entry key="app/src/main/res/drawable/bg_cricle.xml" value="0.27314814814814814" />
         <entry key="app/src/main/res/drawable/bg_edit.xml" value="0.3802083333333333" />
+        <entry key="app/src/main/res/drawable/bg_pic_view_index.xml" value="0.27314814814814814" />
         <entry key="app/src/main/res/drawable/bg_picture_select.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/drawable/bg_save_btn.xml" value="0.3802083333333333" />
+        <entry key="app/src/main/res/drawable/bottom_dialog_bg.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/drawable/bottom_dialog_btn_bg.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/drawable/bottom_dialog_btn_select_bg.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/drawable/bottom_dialog_btn_text_color.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/drawable/bottom_dialog_checked_bg.xml" value="0.3411458333333333" />
         <entry key="app/src/main/res/drawable/dialog_bg.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/drawable/flashlight_check_bg.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/drawable/main_item_bg_num.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/drawable/main_item_choice_status.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/drawable/nine_grid_check_bg.xml" value="0.3802083333333333" />
+        <entry key="app/src/main/res/drawable/nine_grid_line.xml" value="0.3411458333333333" />
+        <entry key="app/src/main/res/drawable/nine_grid_line_ver.xml" value="0.3411458333333333" />
         <entry key="app/src/main/res/drawable/sp_pro_bg.xml" value="0.3802083333333333" />
         <entry key="app/src/main/res/layout/ac_move_file.xml" value="0.3640625" />
+        <entry key="app/src/main/res/layout/ac_picture_preview.xml" value="0.3109375" />
         <entry key="app/src/main/res/layout/ac_privacy.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/ac_setting.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/ac_take_photo.xml" value="0.36277173913043476" />
@@ -21,12 +31,17 @@
         <entry key="app/src/main/res/layout/activity_picture_deal.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/activity_start_up.xml" value="0.3328804347826087" />
         <entry key="app/src/main/res/layout/edit_file_name_dialog.xml" value="0.3640625" />
+        <entry key="app/src/main/res/layout/item_fliter.xml" value="0.325" />
         <entry key="app/src/main/res/layout/item_move_file.xml" value="0.3640625" />
+        <entry key="app/src/main/res/layout/item_picture_preview.xml" value="0.325" />
+        <entry key="app/src/main/res/layout/layout_nine_grid.xml" value="0.325" />
         <entry key="app/src/main/res/layout/main_list_item.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/main_null_item.xml" value="0.1875" />
         <entry key="app/src/main/res/layout/main_null_layout.xml" value="0.3640625" />
         <entry key="app/src/main/res/layout/picture_bottom_select_bg.xml" value="0.3640625" />
+        <entry key="app/src/main/res/layout/share_image_dialog.xml" value="0.325" />
         <entry key="app/src/main/res/menu/picture_deal_bottom_menu.xml" value="0.3640625" />
+        <entry key="app/src/main/res/xml/filepaths.xml" value="0.325" />
         <entry key="cropper/src/main/res/layout/crop_image_activity.xml" value="0.3640625" />
         <entry key="cropper/src/main/res/layout/crop_image_view.xml" value="0.3640625" />
         <entry key="cropper/src/main/res/menu/crop_image_menu.xml" value="0.20364583333333333" />

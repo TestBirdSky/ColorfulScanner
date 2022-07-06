@@ -8,6 +8,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.AcMoveFileBinding
+import com.skybird.colorfulscanner.page.main.FileType
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
 import kotlinx.coroutines.CoroutineScope
@@ -60,7 +61,11 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
             moveFileList.addAll(it1)
         }
         (intent.getSerializableExtra("noCheckedFile") as ArrayList<FileUiBean>?)?.let { it1 ->
-            mAdapter.data.addAll(it1)
+            it1.forEach {
+                if (it.fileType == FileType.FOLDER) {
+                    mAdapter.data.add(it)
+                }
+            }
         }
     }
 

@@ -30,8 +30,8 @@ class MainViewModel : ViewModel() {
 
     fun addFileUiData(file: File) {
         curFileUiData.value?.let {
-            it.add(DataConversionUtils.newFileUiBean(file))
-            curFileUiData.value=it
+            it.add(0, DataConversionUtils.newFileUiBean(file))
+            curFileUiData.value = it
         }
     }
 

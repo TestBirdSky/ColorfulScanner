@@ -70,6 +70,16 @@
             app:layout_constraintBottom_toTopOf="@id/iv_take_photo"
             app:layout_constraintTop_toBottomOf="@id/title_layout" />
 
+        <include
+            android:id="@+id/nine_layout"
+            layout="@layout/layout_nine_grid"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@id/iv_take_photo"
+            app:layout_constraintTop_toBottomOf="@id/title_layout" />
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_take_photo"
             android:layout_width="70dp"

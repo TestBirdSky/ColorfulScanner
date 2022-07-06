@@ -1,9 +1,11 @@
 package com.skybird.colorfulscanner.page.main
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.SimpleItemAnimator
+import cc.shinichi.library.ImagePreview
+import cc.shinichi.library.bean.ImageInfo
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
@@ -21,9 +23,14 @@ import java.io.File
 
 class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
-    private var mCurFolderPath = CSFileUtils.CS_CACHE_FOLDER_TOP
+    companion object {
+        var mCurFolderPath = CSFileUtils.CS_CACHE_FOLDER_TOP
+    }
+
     private val mAdapter by lazy {
-        MainListAdapter()
+        MainListAdapter().apply {
+            setHasStableIds(true)
+        }
     }
     private val mViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
 
@@ -35,6 +42,11 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         binding.run {
             rv.layoutManager = MyGridLayoutManager(this@MainActivity, 3)
             rv.adapter = mAdapter
+            rv.itemAnimator?.let {
+                if (it is SimpleItemAnimator) {
+                    it.supportsChangeAnimations = false
+                }
+            }
             rv.itemAnimator?.changeDuration = 0
         }
         setOnClickListener()
@@ -53,8 +65,14 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             })
             curFolderPath.observe(this@MainActivity, {
                 LogCSI("curFolderPath==>${it}")
-                mCurFolderPath = it
-                refreshNormalUi()
+                if (it != mCurFolderPath) {
+                    mCurFolderPath = it
+                    if (mAdapter.isShowEditList) {
+                        showEditFileUi()
+                    } else {
+                        refreshNormalUi()
+                    }
+                }
             })
         }
     }
@@ -62,7 +80,9 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
     private fun setOnClickListener() {
         binding.run {
             addFile.setOnClickListener {
+                addFile.isClickable = false
                 showAddFileDialog()
+                addFile.isClickable = true
             }
             addPicture.setOnClickListener {
                 LogCSI("addPicture")
@@ -118,23 +138,34 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             }
             ivDel.setOnClickListener {
                 val checkList = mAdapter.getAllCheckEdList()
-                if (checkList.size > 0)
+                if (checkList.size > 0) {
                     mViewModel.delFile(checkList)
+                    mAdapter.isShowEditList = false
+                    refreshNormalUi()
+                }
             }
             ivBack.setOnClickListener {
                 onBackPressed()
             }
         }
         mAdapter.itemClickListener = ItemClickListener {
+            LogCSI("ItemClickListener $it")
             if (it.fileType == FileType.FOLDER) {
                 mViewModel.refreshFolderData(it.filePath)
             } else {
-
+                val s = mAdapter.getAllImageUrl()
+                val index = s.indexOf(it.filePath)
+                showImage(s, if (index == -1) 0 else index)
             }
         }
         mAdapter.itemNameClickListener = ItemNameClickListener {
             showEditFileNameDialog(it)
         }
+    }
+
+    private fun showImage(imageList: List<String>, index: Int) {
+//        ImagePreview.getInstance().setImageList()
+        PicturePreviewActivity.activityStart(this, imageList, index)
     }
 
     private fun showEditFileUi() {

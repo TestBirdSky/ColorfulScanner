@@ -22,6 +22,12 @@
     <string name="picture_rotate">Rotate</string>
     <string name="picture_tailor">Tailor</string>
     <string name="picture_delete">Delete</string>
+    <string name="select_photo_error">Failed to select photo</string>
+    <string name="text_jpg">JPG</string>
+    <string name="text_pdf">PDF</string>
+    <string name="save_picture_to_local_success">Saved to：%1$s</string>
+    <string name="save_picture_to_local_failed">Failed to save image</string>
+    <string name="share_error">Failed to share</string>
 
     <!-- 需要修改的配置   -->
     <string name="contact_email">email//</string>

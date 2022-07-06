@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.widget.ImageView
 import android.widget.Toast
 import com.blankj.utilcode.util.ToastUtils
 import com.bumptech.glide.Glide
+import com.bumptech.glide.Priority
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 
 /**
@@ -43,9 +46,15 @@ fun Activity.toNexAct(
 
 fun ImageView.loadImage(uri: String) {
     Glide.with(this).applyDefaultRequestOptions(
-        RequestOptions().placeholder(R.drawable.ic_item_placeholder)
+        RequestOptions()/*.placeholder(R.drawable.ic_item_placeholder)*/
             .error(R.drawable.ic_item_placeholder)
     ).load(uri).into(this)
+}
+
+fun ImageView.loadImage(bitmap: Bitmap, corner: Int = 8) {
+    val c = RoundedCorners(corner)
+    val options = RequestOptions.bitmapTransform(c)
+    Glide.with(this).load(bitmap).apply(options).into(this)
 }
 
 fun Activity.shareTextToOtherApp(msg: String) {
