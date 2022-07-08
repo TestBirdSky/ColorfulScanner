@@ -14,6 +14,7 @@ import com.skybird.colorfulscanner.R
  */
 abstract class BaseActivity : AppCompatActivity() {
     protected var isUseDataBinding = false
+    protected var isResume = false
     abstract fun layoutId(): Int
 
     abstract fun initUI()
@@ -53,5 +54,15 @@ abstract class BaseActivity : AppCompatActivity() {
         ImmersionBar.with(this)
             .statusBarDarkFont(true)
             .init()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        isResume = true
+    }
+
+    override fun onPause() {
+        super.onPause()
+        isResume = false
     }
 }

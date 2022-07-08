@@ -41,4 +41,10 @@
     <string name="privacy_url">http://www.baidu.com</string>
     <string name="facebook_app_id"> facebook id</string>
     <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
+
+    <!-- VPN   -->
+    <string name="v_title">VPN</string>
+    <string name="text_upload">UPLOAD</string>
+    <string name="text_down">DOWNLOAD</string>
+    <string name="select_server_title">Select Server</string>
 </resources>

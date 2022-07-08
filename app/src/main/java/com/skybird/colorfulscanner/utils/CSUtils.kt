@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.skybird.colorfulscanner.CSApp
+import com.skybird.colorfulscanner.R
 
 
 /**
@@ -14,7 +15,7 @@ import com.skybird.colorfulscanner.CSApp
  */
 object CSUtils {
 
-    fun showSoftInput(context:Context,view: View){
+    fun showSoftInput(context: Context, view: View) {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
     }
@@ -24,4 +25,7 @@ object CSUtils {
         return pm.getPackageInfo(CSApp.mApp.packageName, PackageManager.GET_ACTIVITIES)
     }
 
+    fun getCircleNIcon(nati: String): Int {
+        return R.drawable.ic_default_n
+    }
 }

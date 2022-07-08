@@ -15,6 +15,7 @@ import com.skybird.colorfulscanner.databinding.ActivityMainBinding
 import com.skybird.colorfulscanner.dialog.CreateFileDialog
 import com.skybird.colorfulscanner.dialog.DeleteDialog
 import com.skybird.colorfulscanner.page.*
+import com.skybird.colorfulscanner.page.v.VMainActivity
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -91,6 +92,9 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     }
                 })
 
+            }
+            ivVControl.setOnClickListener {
+                toNexAct(VMainActivity::class.java)
             }
             editFile2.setOnClickListener {
                 mCurAdapter.isShowEditList = true
@@ -191,6 +195,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         binding.run {
             addFile.visibility = View.GONE
             editFile.visibility = View.GONE
+            ivVControl.visibility = View.GONE
             ivSetting.visibility = View.GONE
             addPicture.visibility = View.INVISIBLE
             editFile2.visibility = View.INVISIBLE
@@ -213,6 +218,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 addFile.visibility = View.VISIBLE
                 editFile.visibility = View.VISIBLE
                 ivSetting.visibility = View.VISIBLE
+                ivVControl.visibility = View.VISIBLE
 
 
                 tvName.visibility = View.INVISIBLE

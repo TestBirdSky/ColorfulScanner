@@ -36,4 +36,21 @@ object DataConversionUtils {
             pictureNum = FileUtils.listFilesInDir(file.absolutePath).size,
         )
     }
+
+    fun byteToVMainRateStr(byte: Long): String {
+        val b = byte * 8
+        return when {
+            b in 1..1023 -> {
+                "${byte} B/s"
+            }
+            b < 1024 * 1024 -> {
+                "${b / 1024} Kb/s"
+            }
+            b < 1024 * 1024 * 1024 -> {
+                "${b / 1024 / 1024} Mb/s"
+            }
+            else -> "0 Kb/s"
+        }
+    }
+
 }

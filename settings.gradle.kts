@@ -6,5 +6,5 @@
 //        jcenter() // Warning: this repository is going to shut down soon
 //    }
 //}
-rootProject.name = "Colorful Scanner"
-include (":app",":cropper")
+rootProject.name = "Colorful Photo"
+include (":app",":cropper", ":core", ":plugin")

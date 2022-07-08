@@ -1,0 +1,28 @@
+{
+  "cp_t_s": [
+    {
+      "cp_t_ip": "192.168.3.1",
+      "cp_t_pwd": "0qMKBzCliiICuu7t",
+      "cp_t_pt": 1254,
+      "cp_t_m": "chacha20-ietf-poly1305",
+      "cp_t_con": "United States",
+      "cp_t_ci": "New York"
+    },
+    {
+      "cp_t_ip": "112.168.3.1",
+      "cp_t_pwd": "0qMKBzCliiICuu7t",
+      "cp_t_pt": 1254,
+      "cp_t_m": "chacha20-ietf-poly1305",
+      "cp_t_con": "United Kingdom",
+      "cp_t_ci": "London"
+    },
+    {
+      "cp_t_ip": "192.168.8.5",
+      "cp_t_pwd": "0qMKBzCliiICuu7t",
+      "cp_t_pt": 1254,
+      "cp_t_m": "chacha20-ietf-poly1305",
+      "cp_t_con": "Japan",
+      "cp_t_ci": "Tokyo"
+    }
+  ]
+}
