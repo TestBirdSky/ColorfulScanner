@@ -203,7 +203,7 @@ object CSFileUtils {
     suspend fun saveBitmapToAppDocumentsWithPDF(bitmap: Bitmap): File {
         return withContext(Dispatchers.IO) {
             val fileName =
-                "ColorfulScanner${System.currentTimeMillis()}${Random.nextInt()}.pdf"
+                "ColorfulPhoto${System.currentTimeMillis()}${Random.nextInt()}.pdf"
 //            val path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
             val path =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath

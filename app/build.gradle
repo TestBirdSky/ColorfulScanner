@@ -2,13 +2,15 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.skybird.colorfulscanner"
+        applicationId "com.colorfulphoto.video.easy"
         minSdk 23
         targetSdk 31
         versionCode 1
@@ -76,5 +78,11 @@ dependencies {
 
     //滤镜https://github.com/Zomato/AndroidPhotoFilters
     implementation 'com.github.zomato:androidphotofilters:1.0.2'
+
+
+    implementation platform('com.google.firebase:firebase-bom:30.0.2')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.firebase:firebase-config-ktx'
+    implementation 'com.facebook.android:facebook-android-sdk:12.3.0'
 
 }

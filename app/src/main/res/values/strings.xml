@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
-    <string name="app_name">Colorful Scanner</string>
+    <string name="app_name">Colorful Photo</string>
     <string name="main_null_file_tips">No document, please click“+”to scan the document you need!</string>
     <string name="text_done">Done</string>
     <string name="build_folder">New Folder</string>
@@ -37,8 +37,8 @@
     <string name="common_waring_dialog_title">Tips</string>
 
     <!-- 需要修改的配置   -->
-    <string name="contact_email">email//</string>
-    <string name="privacy_url">http://www.baidu.com</string>
-    <string name="facebook_app_id"> facebook id</string>
+    <string name="contact_email">liuh15005@gmail.com</string>
+    <string name="privacy_url">https://sites.google.com/view/colorful-photo/%E9%A6%96%E9%A1%B5</string>
+    <string name="facebook_app_id">633862750906590</string>
     <string name="admob_id">ca-app-pub-3940256099942544~3347511713</string>
 </resources>

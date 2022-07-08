@@ -1,6 +1,8 @@
 package com.skybird.colorfulscanner
 
 import android.app.Application
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.ktx.initialize
 
 /**
  * Date：2022/6/29
@@ -15,6 +17,7 @@ class CSApp : Application() {
     override fun onCreate() {
         super.onCreate()
         mApp = this
+        Firebase.initialize(this)
         registerActivityLifecycleCallbacks(CSACL())
     }
 }

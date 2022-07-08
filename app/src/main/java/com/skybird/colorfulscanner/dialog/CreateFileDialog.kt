@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
  */
 class CreateFileDialog(
     val title: String = "New Folder",
-    val editContent: String = "ColorfulScanner${System.currentTimeMillis()}",
+    val editContent: String = "ColorfulPhoto${System.currentTimeMillis()}",
     val onNegative: (editName: String, dialog: Dialog?) -> Unit,
 ) : DialogFragment() {
     lateinit var binding: EditFileNameDialogBinding

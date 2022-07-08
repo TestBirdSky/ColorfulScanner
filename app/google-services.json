@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "857231946454",
+    "project_id": "colorful-photo",
+    "storage_bucket": "colorful-photo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:857231946454:android:e6eb5536ec605e8c9c0f77",
+        "android_client_info": {
+          "package_name": "com.colorfulphoto.video.easy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "857231946454-bhqrise4qqs66h9si9h44jqvjcj3tbac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcoz50Frt3Bt78EBv-pcYHwVjr-U8uSCY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "857231946454-bhqrise4qqs66h9si9h44jqvjcj3tbac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
