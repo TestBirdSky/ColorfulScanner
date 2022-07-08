@@ -18,13 +18,31 @@ import com.skybird.colorfulscanner.utils.LogCSI
  * Date：2022/6/29
  * Describe:
  */
-class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(DiffUI()) {
+class MainListAdapter(
+    val itemClickListener: (bean: FileUiBean) -> Unit,
+    val itemNameClickListener: (bean: FileUiBean) -> Unit,
+    val itemCheckListener: (isCanDel: Boolean, isCanMove: Boolean) -> Unit
+) : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(DiffUI()) {
     private val data = arrayListOf<FileUiBean>()
-    var itemClickListener: ItemClickListener? = null
-    var itemNameClickListener: ItemNameClickListener? = null
+    private var checkedList = arrayListOf<FileUiBean>()
+
+    private val noCheckedFolderList = arrayListOf<FileUiBean>()
+
     var isShowEditList = false
         set(value) {
             field = value
+            if (isShowEditList) {
+                checkedList.clear()
+                noCheckedFolderList.clear()
+                for (da in data) {
+                    da.isChecked = false
+                    if (da.fileType == FileType.FOLDER) {
+                        noCheckedFolderList.add(da)
+                    }
+                }
+            } else {
+                itemCheckListener.invoke(false, false)
+            }
             notifyDataSetChanged()
         }
 
@@ -58,15 +76,39 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
             item.setOnClickListener {
                 if (isShowEditList) {
                     bean.isChecked = !bean.isChecked
+                    setData(bean)
+                    refreshCheckListener()
                     notifyItemChanged(adapterPosition)
                 } else {
-                    itemClickListener?.onClick(bean)
+                    itemClickListener.invoke(bean)
                 }
             }
             tvName.setOnClickListener {
-                itemNameClickListener?.onClick(bean)
+                itemNameClickListener.invoke(bean)
             }
         }
+    }
+
+    private fun setData(bean: FileUiBean) {
+        if (bean.isChecked) {
+            checkedList.add(bean)
+        } else {
+            checkedList.remove(bean)
+        }
+        if (bean.fileType == FileType.FOLDER) {
+            if (!bean.isChecked) {
+                noCheckedFolderList.add(bean)
+            } else {
+                noCheckedFolderList.remove(bean)
+            }
+        }
+    }
+
+    private fun refreshCheckListener() {
+        itemCheckListener.invoke(
+            checkedList.size > 0,
+            checkedList.size > 0 && noCheckedFolderList.size > 0
+        )
     }
 
     override fun onCreateViewHolder(
@@ -86,18 +128,11 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
         return data.size
     }
 
-    override fun getItemId(position: Int): Long {
-        return data[position].id
-    }
-
     fun refreshAllData(datas: ArrayList<FileUiBean>) {
         data.clear()
         data.addAll(datas)
         submitList(datas)
         LogCSI("refreshAllData---${datas.size}")
-        datas.forEach {
-            LogCSI("$it")
-        }
         notifyDataSetChanged()
     }
 
@@ -111,25 +146,18 @@ class MainListAdapter : ListAdapter<FileUiBean, MainListAdapter.MyViewHolder>(Di
         return arrayList
     }
 
-    val noCheckEdFileList = arrayListOf<FileUiBean>()
+    fun getNoCheckedFolderList(): ArrayList<FileUiBean> {
+        return noCheckedFolderList
+    }
 
-    fun getAllCheckEdList(): ArrayList<FileUiBean> {
-        noCheckEdFileList.clear()
-        noCheckEdFileList.addAll(data)
-        val re = arrayListOf<FileUiBean>()
-        data.forEach {
-            if (it.isChecked) {
-                re.add(it)
-                noCheckEdFileList.remove(it)
-            }
-        }
-        return re
+    fun getAllCheckedList(): ArrayList<FileUiBean> {
+        return checkedList
     }
 }
 
 class DiffUI : DiffUtil.ItemCallback<FileUiBean>() {
     override fun areItemsTheSame(oldItem: FileUiBean, newItem: FileUiBean): Boolean {
-        return oldItem.id == newItem.id
+        return oldItem.filePath == newItem.filePath
     }
 
     override fun areContentsTheSame(oldItem: FileUiBean, newItem: FileUiBean): Boolean {
@@ -141,14 +169,6 @@ class DiffUI : DiffUtil.ItemCallback<FileUiBean>() {
         LogCSI("areContentsTheSame---> $isSame ---${oldItem}--${newItem}")
         return isSame
     }
-}
-
-fun interface ItemClickListener {
-    fun onClick(bean: FileUiBean)
-}
-
-fun interface ItemNameClickListener {
-    fun onClick(bean: FileUiBean)
 }
 
 enum class FileType {

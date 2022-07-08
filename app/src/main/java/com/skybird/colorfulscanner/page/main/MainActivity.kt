@@ -3,9 +3,8 @@ package com.skybird.colorfulscanner.page.main
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
-import cc.shinichi.library.ImagePreview
-import cc.shinichi.library.bean.ImageInfo
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
@@ -14,24 +13,20 @@ import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityMainBinding
 import com.skybird.colorfulscanner.dialog.CreateFileDialog
+import com.skybird.colorfulscanner.dialog.DeleteDialog
 import com.skybird.colorfulscanner.page.*
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
 import com.skybird.colorfulscanner.utils.REQUIRED_CAMERA_PERMISSIONS
-import java.io.File
 
 class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     companion object {
-        var mCurFolderPath = CSFileUtils.CS_CACHE_FOLDER_TOP
+        var mCurFolderPath = CSFileUtils.CS_EXTERNAL_FOLDER_TOP
     }
 
-    private val mAdapter by lazy {
-        MainListAdapter().apply {
-            setHasStableIds(true)
-        }
-    }
+    lateinit var mCurAdapter: MainListAdapter
     private val mViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
 
     override fun layoutId(): Int {
@@ -39,16 +34,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
     }
 
     override fun initUI() {
-        binding.run {
-            rv.layoutManager = MyGridLayoutManager(this@MainActivity, 3)
-            rv.adapter = mAdapter
-            rv.itemAnimator?.let {
-                if (it is SimpleItemAnimator) {
-                    it.supportsChangeAnimations = false
-                }
-            }
-            rv.itemAnimator?.changeDuration = 0
-        }
+        refreshRecycleView(arrayListOf())
         setOnClickListener()
     }
 
@@ -56,22 +42,22 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         mViewModel.run {
             curFileUiData.observe(this@MainActivity, {
                 LogCSI("data change size==>${it.size}")
-                mAdapter.refreshAllData(it)
-                if (it.size == 0) {
-                    binding.run { nullLayout.visibility = View.VISIBLE }
-                } else {
-                    binding.run { nullLayout.visibility = View.GONE }
-                }
+//                mAdapter.refreshAllData(it)
+                refreshRecycleView(it)
+                setNullLayout(it.size == 0)
             })
             curFolderPath.observe(this@MainActivity, {
                 LogCSI("curFolderPath==>${it}")
-                if (it != mCurFolderPath) {
-                    mCurFolderPath = it
-                    if (mAdapter.isShowEditList) {
+                mCurFolderPath = it
+                if (mCurAdapter.isShowEditList) {
+                    if (mCurAdapter.itemCount > 0) {
                         showEditFileUi()
                     } else {
+                        mCurAdapter.isShowEditList = false
                         refreshNormalUi()
                     }
+                } else {
+                    refreshNormalUi()
                 }
             })
         }
@@ -98,7 +84,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     override fun onDenied(permissions: MutableList<String>?, never: Boolean) {
                         super.onDenied(permissions, never)
                         if (never) {
-
+                            ToastUtils.showShort(getString(R.string.failed_permission))
                         } else {
                             ToastUtils.showShort(getString(R.string.failed_permission))
                         }
@@ -107,15 +93,15 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
             }
             editFile2.setOnClickListener {
-                mAdapter.isShowEditList = true
+                mCurAdapter.isShowEditList = true
                 showEditFileUi()
             }
             editFile.setOnClickListener {
-                mAdapter.isShowEditList = true
+                mCurAdapter.isShowEditList = true
                 showEditFileUi()
             }
             ivClose.setOnClickListener {
-                mAdapter.isShowEditList = false
+                mCurAdapter.isShowEditList = false
                 refreshNormalUi()
             }
 //            tvDone.setOnClickListener {
@@ -125,8 +111,8 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 toNexAct(SettingActivity::class.java)
             }
             ivMove.setOnClickListener {
-                val checkList = mAdapter.getAllCheckEdList()
-                val noCheckFile = mAdapter.noCheckEdFileList
+                val checkList = mCurAdapter.getAllCheckedList()
+                val noCheckFile = mCurAdapter.getNoCheckedFolderList()
                 if (noCheckFile.size == 0) {
                     ToastUtils.showShort(R.string.move_file_error)
                 } else if (checkList.size > 0) {
@@ -137,29 +123,62 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 }
             }
             ivDel.setOnClickListener {
-                val checkList = mAdapter.getAllCheckEdList()
-                if (checkList.size > 0) {
-                    mViewModel.delFile(checkList)
-                    mAdapter.isShowEditList = false
-                    refreshNormalUi()
-                }
+                showDelFileDialog()
             }
             ivBack.setOnClickListener {
                 onBackPressed()
             }
         }
-        mAdapter.itemClickListener = ItemClickListener {
-            LogCSI("ItemClickListener $it")
-            if (it.fileType == FileType.FOLDER) {
-                mViewModel.refreshFolderData(it.filePath)
-            } else {
-                val s = mAdapter.getAllImageUrl()
-                val index = s.indexOf(it.filePath)
-                showImage(s, if (index == -1) 0 else index)
+    }
+
+    private fun showDelFileDialog() {
+        DeleteDialog(getString(R.string.delete_file_tips)) {
+            val checkList = mCurAdapter.getAllCheckedList()
+            if (checkList.size > 0) {
+                mViewModel.delFile(checkList)
+                mCurAdapter.isShowEditList = false
+                refreshNormalUi()
             }
+        }.show(supportFragmentManager, "mainDelete")
+    }
+
+    private fun refreshRecycleView(data: ArrayList<FileUiBean>) {
+        val rv = RecyclerView(this@MainActivity).apply {
+            layoutManager = MyGridLayoutManager(this@MainActivity, 3)
+            mCurAdapter = MainListAdapter({ itemClick(it) },
+                { showEditFileNameDialog(it) },
+                { isCanDel, isCanMove ->
+                    binding.run {
+                        tvDel.alpha = if (isCanDel) 1f else 0.4f
+                        ivDel.alpha = if (isCanDel) 1f else 0.4f
+                        tvMove.alpha = if (isCanMove) 1f else 0.4f
+                        ivMove.alpha = if (isCanMove) 1f else 0.4f
+                    }
+                })
+            adapter = mCurAdapter
+            mCurAdapter.refreshAllData(data)
+            itemAnimator?.let {
+                if (it is SimpleItemAnimator) {
+                    it.supportsChangeAnimations = false
+                }
+            }
+            itemAnimator?.changeDuration = 0
+            itemAnimator?.addDuration = 0
+            itemAnimator?.removeDuration = 0
         }
-        mAdapter.itemNameClickListener = ItemNameClickListener {
-            showEditFileNameDialog(it)
+        binding.rvContainer.removeAllViews()
+        binding.rvContainer.addView(rv)
+    }
+
+    private fun itemClick(uiBean: FileUiBean) {
+        LogCSI("ItemClickListener $uiBean")
+        if (uiBean.fileType == FileType.FOLDER) {
+            binding.rvContainer.removeAllViews()
+            mViewModel.refreshFolderData(uiBean.filePath)
+        } else {
+            val s = mCurAdapter.getAllImageUrl()
+            val index = s.indexOf(uiBean.filePath)
+            showImage(s, if (index == -1) 0 else index)
         }
     }
 
@@ -173,7 +192,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             addFile.visibility = View.GONE
             editFile.visibility = View.GONE
             ivSetting.visibility = View.GONE
-            addPicture.visibility = View.GONE
+            addPicture.visibility = View.INVISIBLE
             editFile2.visibility = View.INVISIBLE
             ivBack.visibility = View.INVISIBLE
 
@@ -190,7 +209,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             bottomLayout.visibility = View.GONE
 
             addPicture.visibility = View.VISIBLE
-            if (mCurFolderPath == CSFileUtils.CS_CACHE_FOLDER_TOP) {
+            if (mCurFolderPath == CSFileUtils.CS_EXTERNAL_FOLDER_TOP) {
                 addFile.visibility = View.VISIBLE
                 editFile.visibility = View.VISIBLE
                 ivSetting.visibility = View.VISIBLE
@@ -199,6 +218,10 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 tvName.visibility = View.INVISIBLE
                 editFile2.visibility = View.GONE
                 ivBack.visibility = View.GONE
+
+                if (mCurAdapter.itemCount == 0) {
+                    editFile.visibility = View.GONE
+                }
             } else {
                 addFile.visibility = View.GONE
                 editFile.visibility = View.GONE
@@ -209,22 +232,33 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 tvName.visibility = View.VISIBLE
                 editFile2.visibility = View.VISIBLE
                 ivBack.visibility = View.VISIBLE
+
+                if (mCurAdapter.itemCount == 0) {
+                    editFile2.visibility = View.INVISIBLE
+                }
             }
+        }
+    }
+
+    private fun setNullLayout(isShowNullLayout: Boolean) {
+        binding.run {
+            nullLayout.visibility = if (isShowNullLayout) View.VISIBLE else View.GONE
         }
     }
 
     private fun showAddFileDialog() {
         LogCSI("showAddFileDialog")
         CreateFileDialog { name, dialog ->
-            if (CSFileUtils.createFolder(mCurFolderPath, name)) {
-                val file = CSFileUtils.getFile(mCurFolderPath, name)
-                if (file != null) {
-                    mViewModel.addFileUiData(file)
-                } else {
-                    ToastUtils.showShort(R.string.create_folder_failed)
-                }
-                dialog?.dismiss()
+            CSFileUtils.createFolder(mCurFolderPath, name)?.let {
+                mViewModel.addFileUiData(it)
             }
+            dialog?.dismiss()
+            //test data
+//            for (i in 0 until 100) {
+//                CSFileUtils.createFolder(mCurFolderPath, "$name--- i $i")?.let {
+//                    mViewModel.addFileUiData(it)
+//                }
+//            }
         }.show(supportFragmentManager, "addFile")
     }
 
@@ -232,20 +266,18 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         LogCSI("showEditFileNameDialog")
         CreateFileDialog(getString(R.string.common_rename), bean.fileName) { newName, dialog ->
             if (CSFileUtils.renameFolder(newName, bean.fileName, mCurFolderPath)) {
-                bean.fileName = newName
-                bean.filePath = mCurFolderPath + File.separator + newName
-                mViewModel.renameItemFile(bean)
+                mViewModel.renameItemFile(bean, newName)
             }
             dialog?.dismiss()
         }.show(supportFragmentManager, "renameFileName")
     }
 
     override fun onBackPressed() {
-        if (mAdapter.isShowEditList) {
-            mAdapter.isShowEditList = false
+        if (mCurAdapter.isShowEditList) {
+            mCurAdapter.isShowEditList = false
             refreshNormalUi()
         } else {
-            if (mCurFolderPath == CSFileUtils.CS_CACHE_FOLDER_TOP) {
+            if (mCurFolderPath == CSFileUtils.CS_EXTERNAL_FOLDER_TOP) {
                 super.onBackPressed()
             } else {
                 FileUtils.getFileByPath(mCurFolderPath).parent?.let {

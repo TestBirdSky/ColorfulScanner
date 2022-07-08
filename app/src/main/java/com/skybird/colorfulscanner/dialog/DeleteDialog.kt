@@ -9,14 +9,15 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.skybird.colorfulscanner.R
-import com.skybird.colorfulscanner.databinding.DialogLoadingFragmentBinding
+import com.skybird.colorfulscanner.databinding.DelDialogBinding
 
 /**
- * Date：2022/7/6
+ * Date：2022/7/7
  * Describe:
  */
-class LoadingDialog(private val isWindowTransparent: Boolean = true) : DialogFragment() {
-    lateinit var binding: DialogLoadingFragmentBinding
+class DeleteDialog(val content: String, val onNegative: () -> Unit) : DialogFragment() {
+
+    lateinit var binding: DelDialogBinding
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,24 +27,30 @@ class LoadingDialog(private val isWindowTransparent: Boolean = true) : DialogFra
         binding =
             DataBindingUtil.inflate(
                 inflater,
-                R.layout.dialog_loading_fragment,
+                R.layout.del_dialog,
                 container,
                 false
             )
-        //布局底色
         dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        //设置dialog窗体颜色透明
-        if (isWindowTransparent)
-            dialog?.window?.setDimAmount(0f)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.run {
+            isCancelable = false
             setCanceledOnTouchOutside(false)
         }
-//        val rotate: Animation = AnimationUtils.loadAnimation(context, R.anim.start_animtor)
-//        binding.progressBar.startAnimation(rotate)
+        binding.run {
+            tvContent.text = content
+            tvDel.setOnClickListener {
+                onNegative.invoke()
+                dismiss()
+            }
+            tvCancel.setOnClickListener {
+                dismiss()
+            }
+
+        }
     }
 }

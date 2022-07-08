@@ -9,6 +9,7 @@ import android.app.Application
 class CSApp : Application() {
     companion object {
         lateinit var mApp: CSApp
+        var isAppResume = false
     }
 
     override fun onCreate() {

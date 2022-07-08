@@ -6,7 +6,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.databinding.ItemMoveFileBinding
-import com.skybird.colorfulscanner.page.main.ItemClickListener
 
 /**
  * Date：2022/7/1
@@ -14,7 +13,6 @@ import com.skybird.colorfulscanner.page.main.ItemClickListener
  */
 class MoveFileAdapter : RecyclerView.Adapter<MoveFileAdapter.MoveFileViewHolder>() {
     val data = arrayListOf<FileUiBean>()
-    var itemClickListener: ItemClickListener? = null
     var curSelectFilePath = ""
 
     inner class MoveFileViewHolder(val fileBinding: ItemMoveFileBinding) :

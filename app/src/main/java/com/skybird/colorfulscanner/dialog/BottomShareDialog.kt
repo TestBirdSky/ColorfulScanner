@@ -17,11 +17,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import com.blankj.utilcode.util.ConvertUtils
+import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.databinding.ShareImageDialogBinding
+import com.skybird.colorfulscanner.loadCornerImage
 import com.skybird.colorfulscanner.loadImage
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -30,10 +32,11 @@ import java.io.*
 
 /**
  * Date：2022/7/6
- * Describe:
+ * Describe: bitmap 和filePath 必须传一个
  */
-class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
-
+class BottomShareDialog(val bitmap: Bitmap? = null, val filePath: String = "") :
+    DialogFragment() {
+    private val loadingDialog = LoadingDialog(false)
     lateinit var binding: ShareImageDialogBinding
 
     override fun onCreateView(
@@ -61,7 +64,11 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.run {
-            iv.loadImage(bitmap)
+            if (bitmap != null) {
+                iv.loadCornerImage(bitmap)
+            } else {
+                iv.loadImage(filePath,true)
+            }
             ivClose.setOnClickListener {
                 dismiss()
             }
@@ -81,25 +88,7 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
                                 all: Boolean
                             ) {
                                 if (all) {
-                                    lifecycleScope.launch {
-                                        if (btnJpg.isChecked) {
-                                            CSFileUtils.saveBitmapToLocalPhotoAlbum(
-                                                context!!,
-                                                bitmap
-                                            )
-                                            dismiss()
-                                        } else {
-                                            val file = CSFileUtils.saveBitmapToAppCacheFile(bitmap)
-                                            ToastUtils.showLong(
-                                                getString(
-                                                    R.string.save_picture_to_local_success,
-                                                    file.absolutePath
-                                                )
-                                            )
-                                            dismiss()
-                                            LogCSI("file --> ${file.absolutePath}")
-                                        }
-                                    }
+                                    saveToLocal()
                                 }
                             }
 
@@ -140,6 +129,18 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
         }
     }
 
+    private fun showLoadingDialog() {
+        activity?.let {
+            loadingDialog.show(it.supportFragmentManager, "loading")
+        }
+    }
+
+    private fun dismissLoadingDialog() {
+        activity?.let {
+            loadingDialog.dismiss()
+        }
+    }
+
     override fun getTheme(): Int {
         return R.style.BottomShareDialogStyle
     }
@@ -158,7 +159,12 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
 
     private fun shareBitmapFile() {
         lifecycleScope.launch {
-            val path = CSFileUtils.saveBitmapToTempFile(bitmap)
+            showLoadingDialog()
+            val path = if (bitmap != null) {
+                CSFileUtils.saveBitmapToTempFile(bitmap)
+            } else {
+                filePath
+            }
             val intent = Intent()
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -173,13 +179,20 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
                 intent.setDataAndType(uri, "image/*")
                 startActivity(Intent.createChooser(intent, "share"))
             }
+            dismissLoadingDialog()
             dismiss()
         }
     }
 
     private fun sharePdfFile() {
         lifecycleScope.launch {
-            val file = CSFileUtils.saveBitmapToTempPdfFile(bitmap)
+            showLoadingDialog()
+            var file = if (bitmap != null) {
+                CSFileUtils.saveBitmapToTempPdfFile(bitmap)
+            } else {
+                FileUtils.getFileByPath(filePath)
+            }
+
             val intent = Intent(Intent.ACTION_SEND)
             context?.let {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -194,7 +207,52 @@ class BottomShareDialog(val bitmap: Bitmap) : DialogFragment() {
                 intent.type = "application/pdf"
                 startActivity(Intent.createChooser(intent, "share"))
             }
+            dismissLoadingDialog()
             dismiss()
         }
+    }
+
+    private fun saveToLocal() {
+        lifecycleScope.launch {
+            showLoadingDialog()
+            if (binding.btnJpg.isChecked) {
+                saveToPhotoAlbum()
+                dismiss()
+            } else {
+                saveToDocuments()
+
+                dismiss()
+
+            }
+            dismissLoadingDialog()
+        }
+    }
+
+    private suspend fun saveToPhotoAlbum() {
+        if (bitmap != null) {
+            context?.let {
+                CSFileUtils.saveBitmapToLocalPhotoAlbum(
+                    it,
+                    bitmap
+                )
+            }
+        } else {
+            context?.let { CSFileUtils.saveJpegFileToLocalPhotoAlbum(it, filePath) }
+        }
+    }
+
+    private suspend fun saveToDocuments() {
+        val file = if (bitmap != null) {
+            CSFileUtils.saveBitmapToAppDocumentsWithPDF(bitmap)
+        } else {
+            CSFileUtils.fileToPDFAndSaveLocalDocuments(filePath)
+        }
+        ToastUtils.showLong(
+            getString(
+                R.string.save_picture_to_local_success,
+                file.absolutePath
+            )
+        )
+        LogCSI("file --> ${file.absolutePath}")
     }
 }

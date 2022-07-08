@@ -8,6 +8,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.AcMoveFileBinding
+import com.skybird.colorfulscanner.dialog.LoadingDialog
 import com.skybird.colorfulscanner.page.main.FileType
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -24,7 +25,7 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
     private val moveFileList = arrayListOf<FileUiBean>()
 
     private val mAdapter by lazy { MoveFileAdapter() }
-
+    var loadingDialog = LoadingDialog()
     override fun layoutId() = R.layout.ac_move_file
 
     override fun initUI() {
@@ -36,13 +37,16 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
                 if (!TextUtils.isEmpty(mAdapter.curSelectFilePath)) {
                     lifecycleScope.launch(Dispatchers.Main) {
                         var isSuccess = false
+                        loadingDialog.show(supportFragmentManager, "loading")
                         moveFileList.forEach {
                             if (CSFileUtils.move(it.filePath, mAdapter.curSelectFilePath)) {
                                 isSuccess = true
                             }
                             LogCSI("isSuccess==$isSuccess --${it.filePath}--\n-${mAdapter.curSelectFilePath}")
                         }
+                        loadingDialog.dismiss()
                         if (isSuccess) {
+                            ToastUtils.showShort(R.string.move_file_success)
                             setResult(RESULT_OK)
                             onBackPressed()
                         } else {

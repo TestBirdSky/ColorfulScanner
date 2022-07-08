@@ -44,14 +44,16 @@ fun Activity.toNexAct(
     return this
 }
 
-fun ImageView.loadImage(uri: String) {
+fun ImageView.loadImage(uri: String, skipMemCache: Boolean = false) {
     Glide.with(this).applyDefaultRequestOptions(
         RequestOptions()/*.placeholder(R.drawable.ic_item_placeholder)*/
+            .dontAnimate()
+            .skipMemoryCache(skipMemCache)
             .error(R.drawable.ic_item_placeholder)
     ).load(uri).into(this)
 }
 
-fun ImageView.loadImage(bitmap: Bitmap, corner: Int = 8) {
+fun ImageView.loadCornerImage(bitmap: Bitmap, corner: Int = 8) {
     val c = RoundedCorners(corner)
     val options = RequestOptions.bitmapTransform(c)
     Glide.with(this).load(bitmap).apply(options).into(this)

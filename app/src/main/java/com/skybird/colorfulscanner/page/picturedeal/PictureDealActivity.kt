@@ -5,6 +5,8 @@ import android.net.Uri
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.blankj.utilcode.util.FileUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
@@ -13,11 +15,18 @@ import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityPictureDealBinding
 import com.skybird.colorfulscanner.dialog.BottomShareDialog
+import com.skybird.colorfulscanner.dialog.DeleteDialog
+import com.skybird.colorfulscanner.dialog.LoadingDialog
 import com.skybird.colorfulscanner.page.main.MainActivity
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
+import com.theartofdev.edmodo.cropper.CropImageView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
+import java.net.URI
 import kotlin.random.Random
 
 /**
@@ -33,9 +42,10 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
     private var pageState = PageStatus.NORMAL
     private var originPictureUri: String? = null
     private var curBitmap: Bitmap? = null
-    private var filterBitmap: Bitmap? = null
     private var isCanDel = false
     private val filterAdapter by lazy { FilterAdapter { filterItemClick(it) } }
+
+    private val loadingDialog = LoadingDialog()
 
     override fun layoutId() = R.layout.activity_picture_deal
 
@@ -65,12 +75,14 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                     bottomNavigation.menu.removeItem(R.id.del)
                 }
                 val uri = Uri.parse(originPictureUri)
+                loadingDialog.show(supportFragmentManager, "loading")
                 Glide.with(this@PictureDealActivity).asBitmap().load(uri)
                     .into(object : SimpleTarget<Bitmap>() {
                         override fun onResourceReady(
                             resource: Bitmap,
                             transition: Transition<in Bitmap>?
                         ) {
+                            loadingDialog.dismiss()
                             curBitmap = resource
                             Glide.with(this@PictureDealActivity).load(curBitmap).into(ivNormal)
                         }
@@ -97,9 +109,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                 LogCSI("onItemSlistener")
                 when (menuItem.itemId) {
                     R.id.del -> {
-                        LogCSI("del-->$originPictureUri")
-                        val uri = Uri.parse(originPictureUri)
-                        CSFileUtils.deleteImage(this@PictureDealActivity, uri)
+                        showDelDialog()
                     }
                     R.id.tailor -> {
                         pageState = PageStatus.TAILOR
@@ -137,7 +147,8 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
             PageStatus.TAILOR -> showTailor()
             PageStatus.ROTATE -> showRotate()
             PageStatus.FILTER -> showFilter()
-            PageStatus.SHARE -> {}
+            PageStatus.SHARE -> {// nothing do
+            }
         }
     }
 
@@ -145,7 +156,8 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
         binding.run {
             curBitmap?.let { cropImageView.setImageBitmap(curBitmap) }
             cropImageView.visibility = View.VISIBLE
-
+            cropImageView.isCanCrop = true
+            cropImageView.guidelines = CropImageView.Guidelines.ON
 
             ivLeftRotate.visibility = View.GONE
             ivRightRotate.visibility = View.GONE
@@ -168,6 +180,8 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
         binding.run {
             curBitmap?.let { cropImageView.setImageBitmap(curBitmap) }
             cropImageView.visibility = View.VISIBLE
+            cropImageView.guidelines = CropImageView.Guidelines.OFF
+            cropImageView.isCanCrop = false
 
             ivLeftRotate.visibility = View.VISIBLE
             ivRightRotate.visibility = View.VISIBLE
@@ -257,13 +271,30 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
     private fun saveBitmapToLocal() {
         curBitmap?.let {
             lifecycleScope.launch {
+                loadingDialog.show(supportFragmentManager, "dialog")
                 val fileName = "${System.currentTimeMillis()}--${Random.nextInt()}.jpeg"
-                CSFileUtils.saveBitmapToFile(MainActivity.mCurFolderPath, fileName, it)
-                toNexAct(MainActivity::class.java)
-                finish()
+                val isSuccess =
+                    CSFileUtils.saveBitmapToFile(MainActivity.mCurFolderPath, fileName, it)
+                loadingDialog.dismiss()
+                if (isSuccess) {
+                    toNexAct(MainActivity::class.java)
+                    finish()
+                }
+
             }
         }
     }
+
+//    private fun testData(bitmap: Bitmap) {
+//        CoroutineScope(Dispatchers.IO).launch {
+//            for (i in 0 until 30) {
+//                val fileName = "${System.currentTimeMillis()}--${Random.nextInt()}.jpeg"
+//                val isSuccess =
+//                    CSFileUtils.saveBitmapToFile(MainActivity.mCurFolderPath, fileName, bitmap)
+//                LogCSI("isSuccess-->$isSuccess")
+//            }
+//        }
+//    }
 
     private fun filterItemClick(bean: FilterItemBean) {
         LogCSI("filterItemClick ${bean.name}")
@@ -275,6 +306,19 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
     override fun onDestroy() {
         super.onDestroy()
         CSFileUtils.delTempFolder()
+    }
+
+
+    private fun showDelDialog() {
+        DeleteDialog(getString(R.string.delete_picture_tips)) {
+            LogCSI("del-->$originPictureUri")
+            val uri = Uri.parse(originPictureUri)
+            if (CSFileUtils.deleteImage(this@PictureDealActivity, uri)) {
+                ToastUtils.showShort(R.string.delete_success)
+                toNexAct(MainActivity::class.java)
+                finish()
+            }
+        }.show(supportFragmentManager, "DialogDelete")
     }
 
     override fun onBackPressed() {

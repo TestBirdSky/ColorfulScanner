@@ -9,10 +9,10 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="285dp"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:paddingBottom="20dp"
-        android:background="@drawable/dialog_bg">
+        android:background="@drawable/dialog_bg"
+        android:paddingBottom="20dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvTitle"
@@ -21,32 +21,23 @@
             android:gravity="center"
             android:textColor="#31314F"
             android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="New Folder" />
+            android:text="@string/common_waring_dialog_title" />
 
-        <View
+        <TextView
+            android:id="@+id/tvContent"
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#0D000000"
-            app:layout_constraintTop_toBottomOf="@id/tvTitle" />
-
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/edit"
-            android:layout_width="240dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/bg_edit"
-            android:gravity="center|start"
-            android:hint="@string/input_name_tips"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:singleLine="true"
-            android:textColor="#1C1E2F"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:minHeight="60dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/delete_file_tips"
+            android:textColor="#31314F"
             android:textSize="14sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -57,25 +48,27 @@
             android:layout_marginTop="20dp"
             android:background="@drawable/bg_cancel"
             android:gravity="center"
-            android:text="Cancel"
+            android:singleLine="true"
+            android:text="@string/common_cancel"
             android:textColor="#31314F"
             android:textSize="14sp"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/edit" />
+            app:layout_constraintTop_toBottomOf="@id/tvContent" />
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/tv_save"
+            android:id="@+id/tv_del"
             android:layout_width="123dp"
             android:layout_height="44dp"
             android:layout_marginTop="20dp"
             android:layout_marginEnd="20dp"
+            android:singleLine="true"
             android:background="@drawable/bg_save_btn"
             android:gravity="center"
-            android:text="Save"
+            android:text="@string/common_del"
             android:textColor="@color/white"
             android:textSize="14sp"
             app:layout_constraintLeft_toRightOf="@id/tv_cancel"
-            app:layout_constraintTop_toBottomOf="@id/edit" />
+            app:layout_constraintTop_toBottomOf="@id/tvContent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

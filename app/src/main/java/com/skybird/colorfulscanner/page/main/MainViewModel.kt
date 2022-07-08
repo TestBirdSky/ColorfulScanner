@@ -15,7 +15,7 @@ import java.io.File
  */
 class MainViewModel : ViewModel() {
 
-    val curFolderPath = MutableLiveData(CSFileUtils.CS_CACHE_FOLDER_TOP)
+    val curFolderPath = MutableLiveData(CSFileUtils.CS_EXTERNAL_FOLDER_TOP)
 
     val curFileUiData = MutableLiveData<ArrayList<FileUiBean>>()
 
@@ -41,7 +41,7 @@ class MainViewModel : ViewModel() {
             list.forEach { bean ->
                 val isSuccess = FileUtils.delete(bean.filePath)
                 for (i: Int in 0 until it.size) {
-                    if (it[i].id == bean.id) {
+                    if (it[i].filePath == bean.filePath) {
                         it.remove(it[i])
                         break
                     }
@@ -53,12 +53,12 @@ class MainViewModel : ViewModel() {
 
     }
 
-    fun renameItemFile(uiBean: FileUiBean) {
+    fun renameItemFile(uiBean: FileUiBean, newName: String) {
         curFileUiData.value?.let {
             for (i: Int in 0 until it.size) {
-                if (it[i].id == uiBean.id) {
-                    it[i].fileName = uiBean.fileName
-                    it[i].filePath = uiBean.filePath
+                if (it[i].filePath == uiBean.filePath) {
+                    it[i].fileName = newName
+                    it[i].filePath = curFolderPath.value + File.separator + newName
                     LogCSI("renameItemFile -->${it[i]}")
                     break
                 }

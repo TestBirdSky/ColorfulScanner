@@ -10,5 +10,4 @@ data class FileUiBean(
     var fileType: FileType = FileType.IMAGE,
     var pictureNum: Int = 0,
     var isChecked: Boolean = false,
-    val id: Long = System.currentTimeMillis()+Random.nextInt(),
 ) : Serializable

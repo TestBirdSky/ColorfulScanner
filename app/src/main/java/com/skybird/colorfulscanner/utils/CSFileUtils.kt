@@ -6,11 +6,13 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.IntentSender
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.print.PrintAttributes
 import android.provider.MediaStore
 import com.blankj.utilcode.util.ConvertUtils
@@ -32,8 +34,8 @@ import kotlin.random.Random
  * Describe:
  */
 object CSFileUtils {
-    val CS_CACHE_FOLDER_TOP = CSApp.mApp.getExternalFilesDir("imageCache")?.path ?: ""
-    private val CACHE_DIR = CSApp.mApp.externalCacheDir?.path ?: ""
+    val CS_EXTERNAL_FOLDER_TOP = CSApp.mApp.getExternalFilesDir("fileCache")?.path ?: ""
+    private val CACHE_DIR = CSApp.mApp.cacheDir.absolutePath
     private val tempFolder = CACHE_DIR + File.separator + "temp"
     suspend fun saveBitmapToTempFile(bitmap: Bitmap): String {
         val fileName = "${System.currentTimeMillis()}--${Random.nextInt()}.jpeg"
@@ -41,8 +43,8 @@ object CSFileUtils {
         return tempFolder + File.separator + fileName
     }
 
-    suspend fun saveBitmapToFile(filePath: String, fileName: String, bitmap: Bitmap) {
-        withContext(Dispatchers.IO) {
+    suspend fun saveBitmapToFile(filePath: String, fileName: String, bitmap: Bitmap): Boolean {
+        return withContext(Dispatchers.IO) {
             val file = File(filePath, fileName)
             FileIOUtils.writeFileFromBytesByStream(file, ConvertUtils.bitmap2Bytes(bitmap))
         }
@@ -53,19 +55,21 @@ object CSFileUtils {
         return FileUtils.getFileByPath(path)
     }
 
-    fun createFolder(filePath: String, fileName: String): Boolean {
+    fun createFolder(filePath: String, fileName: String): File? {
         val newFilePath = filePath + File.separator + fileName
         if (FileUtils.isFileExists(newFilePath)) {
             LogCSE("createFile $newFilePath  ---file exists")
             ToastUtils.showShort(R.string.filename_repeat)
-            return false
+            return null
         }
         val newFile = File(filePath, fileName)
         LogCSI("createFile ${newFile.absolutePath}  ---file mkdirs")
         val isSuccess = newFile.mkdirs()
-        if (!isSuccess)
+        if (!isSuccess) {
             ToastUtils.showShort(R.string.create_folder_failed)
-        return isSuccess
+            return null
+        }
+        return newFile
     }
 
     fun renameFolder(newName: String, oldName: String, parentPath: String): Boolean {
@@ -147,6 +151,27 @@ object CSFileUtils {
         return false
     }
 
+    suspend fun saveJpegFileToLocalPhotoAlbum(context: Context, filePath: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                val path =
+                    MediaStore.Images.Media.insertImage(context.contentResolver, filePath, "", "")
+                withContext(Dispatchers.Main) {
+                    ToastUtils.showLong(
+                        context.getString(
+                            R.string.save_picture_to_local_success,
+                            path
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    ToastUtils.showShort(context.getString(R.string.save_picture_to_local_failed))
+                }
+            }
+        }
+    }
+
     suspend fun saveBitmapToLocalPhotoAlbum(context: Context, bitmap: Bitmap) {
         withContext(Dispatchers.IO) {
             try {
@@ -168,11 +193,25 @@ object CSFileUtils {
         }
     }
 
-    suspend fun saveBitmapToAppCacheFile(bitmap: Bitmap): File {
+    suspend fun fileToPDFAndSaveLocalDocuments(filePath: String): File {
+        return withContext(Dispatchers.IO) {
+            val bitmap = BitmapFactory.decodeFile(filePath)
+            saveBitmapToAppDocumentsWithPDF(bitmap)
+        }
+    }
+
+    suspend fun saveBitmapToAppDocumentsWithPDF(bitmap: Bitmap): File {
         return withContext(Dispatchers.IO) {
             val fileName =
                 "ColorfulScanner${System.currentTimeMillis()}${Random.nextInt()}.pdf"
-            saveBitmapToPdf(bitmap, CSApp.mApp.cacheDir.absolutePath, fileName)
+//            val path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
+            val path =
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
+            saveBitmapToPdf(
+                bitmap,
+                path,
+                fileName
+            )
         }
     }
 
@@ -184,18 +223,18 @@ object CSFileUtils {
         }
     }
 
-    private fun saveBitmapToPdf(bitmaps: Bitmap, dir: String, name: String): File {
+    private fun saveBitmapToPdf(bitmap: Bitmap, dir: String, name: String): File {
         val doc = PdfDocument()
         val pageWidth = PrintAttributes.MediaSize.ISO_A4.widthMils * 72 / 1000
-        val scale = pageWidth.toFloat() / bitmaps.width.toFloat()
-        val pageHeight = (bitmaps.height * scale).toInt()
+        val scale = pageWidth.toFloat() / bitmap.width.toFloat()
+        val pageHeight = (bitmap.height * scale).toInt()
         val matrix = Matrix()
         matrix.postScale(scale, scale)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
         val newPage = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, 0).create()
         val page = doc.startPage(newPage)
         val canvas = page.canvas
-        canvas.drawBitmap(bitmaps, matrix, paint)
+        canvas.drawBitmap(bitmap, matrix, paint)
         doc.finishPage(page)
         val file = File(dir, name)
         var outputStream: FileOutputStream? = null

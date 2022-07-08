@@ -16,15 +16,18 @@ import kotlinx.coroutines.launch
  * Describe:
  */
 class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
+    private var isHotReboot = false
     override fun layoutId(): Int {
         return R.layout.activity_start_up
     }
+
     override fun initUI() {
         val rotate: Animation = AnimationUtils.loadAnimation(this, R.anim.start_animtor)
         binding.circularProgressBar.startAnimation(rotate)
     }
 
     override fun initData() {
+        isHotReboot = intent.getBooleanExtra("isHotReboot", false)
         lifecycleScope.launch {
             delay(2000)
             toMainPage()
@@ -32,7 +35,9 @@ class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
     }
 
     private fun toMainPage() {
-        toNexAct(MainActivity::class.java)
+        if (!isHotReboot) {
+            toNexAct(MainActivity::class.java)
+        }
         finish()
     }
 

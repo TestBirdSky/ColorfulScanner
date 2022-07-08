@@ -16,6 +16,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.AcTakePhotoBinding
+import com.skybird.colorfulscanner.dialog.LoadingDialog
 import com.skybird.colorfulscanner.page.picturedeal.PictureDealActivity
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.LogCSE
@@ -29,6 +30,8 @@ import java.util.*
  */
 class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
     private var imageCapture: ImageCapture? = null
+    val loadingDialog = LoadingDialog()
+
     private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             result(it)
@@ -53,6 +56,7 @@ class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
             }
             ivTakePhoto.setOnClickListener {
                 ivTakePhoto.isClickable = false
+                loadingDialog.show(supportFragmentManager, "loading")
                 takePhoto()
             }
         }
@@ -133,17 +137,19 @@ class TakePhotoActivity : BaseDataBindingAc<AcTakePhotoBinding>() {
                 override fun onError(exc: ImageCaptureException) {
                     LogCSI("Photo capture failed: ${exc.message}")
                     binding.ivTakePhoto.isClickable = true
+                    loadingDialog.dismiss()
                     ToastUtils.showLong(R.string.take_photo_failed)
                 }
 
                 override fun
                         onImageSaved(output: ImageCapture.OutputFileResults) {
                     val msg = "Photo capture succeeded: ${output.savedUri}"
-                    binding.ivTakePhoto.isClickable = true
                     toNexAct(PictureDealActivity::class.java, Bundle().apply {
                         putString("picture_uri", output.savedUri.toString())
                         putBoolean("is_can_del_cur_uri", true)
                     })
+                    binding.ivTakePhoto.isClickable = true
+                    loadingDialog.dismiss()
                     LogCSI(msg)
                 }
             }

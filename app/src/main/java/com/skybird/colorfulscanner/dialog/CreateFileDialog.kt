@@ -2,6 +2,8 @@ package com.skybird.colorfulscanner.dialog
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.LayoutInflater
@@ -23,7 +25,7 @@ import kotlinx.coroutines.launch
  */
 class CreateFileDialog(
     val title: String = "New Folder",
-    val editContent: String = "",
+    val editContent: String = "ColorfulScanner${System.currentTimeMillis()}",
     val onNegative: (editName: String, dialog: Dialog?) -> Unit,
 ) : DialogFragment() {
     lateinit var binding: EditFileNameDialogBinding
@@ -40,6 +42,7 @@ class CreateFileDialog(
                 container,
                 false
             )
+        dialog?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         return binding.root
     }
 

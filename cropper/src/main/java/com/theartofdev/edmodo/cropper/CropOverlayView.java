@@ -649,6 +649,7 @@ public class CropOverlayView extends View {
   /**
    * Draw 2 veritcal and 2 horizontal guidelines inside the cropping area to split it into 9 equal
    * parts.
+   * 画九宫格
    */
   private void drawGuidelines(Canvas canvas) {
     if (mGuidelinePaint != null) {
