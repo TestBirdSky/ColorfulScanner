@@ -5,6 +5,8 @@ import android.app.Application
 import android.os.Process
 import com.github.shadowsocks.Core
 import com.skybird.colorfulscanner.page.StartUpActivity
+import com.skybird.colorfulscanner.utils.ConfigureManager
+import com.skybird.colorfulscanner.utils.DEFAULT_SERVER_NAME
 
 /**
  * Date：2022/6/29
@@ -22,6 +24,7 @@ class CSApp : Application() {
         if (!isBg()) {
             mApp = this
             registerActivityLifecycleCallbacks(CSACL())
+            ConfigureManager.loadRemoteConfigure()
         }
     }
 
@@ -34,4 +37,9 @@ class CSApp : Application() {
         }
         return false
     }
+
+    var connectedName: String = DEFAULT_SERVER_NAME
+    var connectedTime: Long = -1L
+    var connectedIcon: Int = R.drawable.ic_default_n
+    var isConnectedV = false
 }

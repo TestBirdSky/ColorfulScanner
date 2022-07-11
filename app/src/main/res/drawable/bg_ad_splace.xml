@@ -18,7 +18,7 @@
             <padding android:top="1dp" />
             <padding android:bottom="1dp" />
             <corners android:radius="16dp" />
-            <solid android:color="#0A19365A" />
+            <solid android:color="#0819365A" />
         </shape>
     </item>
     <item>
@@ -38,7 +38,7 @@
             <padding android:top="1dp" />
             <padding android:bottom="1dp" />
             <corners android:radius="16dp" />
-            <solid android:color="#1419365A" />
+            <solid android:color="#1219365A" />
         </shape>
     </item>
 

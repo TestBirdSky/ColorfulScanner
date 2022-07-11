@@ -1,8 +1,10 @@
 package com.skybird.colorfulscanner.utils
 
 import com.blankj.utilcode.util.FileUtils
+import com.skybird.colorfulscanner.bean.SerBean
 import com.skybird.colorfulscanner.page.main.FileType
 import com.skybird.colorfulscanner.page.FileUiBean
+import com.skybird.colorfulscanner.page.v.SerUiBean
 import java.io.File
 
 /**
@@ -51,6 +53,27 @@ object DataConversionUtils {
             }
             else -> "0 Kb/s"
         }
+    }
+
+    fun serBeanListToSerUiBean(serBeanList: ArrayList<SerBean>): ArrayList<SerUiBean> {
+        val list = arrayListOf<SerUiBean>()
+        list.add(
+            SerUiBean(
+                DEFAULT_SERVER_NAME,
+                DEFAULT_SERVER_NAME,
+                DEFAULT_SERVER_NAME == getCurSelectedName()
+            )
+        )
+        for (bean in serBeanList) {
+            list.add(
+                SerUiBean(
+                    bean.getName(),
+                    bean.cp_t_con,
+                    bean.getName() == getCurSelectedName()
+                )
+            )
+        }
+        return list
     }
 
 }

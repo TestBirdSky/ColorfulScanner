@@ -9,11 +9,13 @@ import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
+import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityMainBinding
 import com.skybird.colorfulscanner.dialog.CreateFileDialog
 import com.skybird.colorfulscanner.dialog.DeleteDialog
+import com.skybird.colorfulscanner.dialog.OpenPermissionDialog
 import com.skybird.colorfulscanner.page.*
 import com.skybird.colorfulscanner.page.v.VMainActivity
 import com.skybird.colorfulscanner.toNexAct
@@ -85,7 +87,15 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     override fun onDenied(permissions: MutableList<String>?, never: Boolean) {
                         super.onDenied(permissions, never)
                         if (never) {
-                            ToastUtils.showShort(getString(R.string.failed_permission))
+                            OpenPermissionDialog({
+                                XXPermissions.startPermissionActivity(
+                                    this@MainActivity,
+                                    permissions
+                                )
+                            }, {
+                                ToastUtils.showShort(getString(R.string.failed_permission))
+                            }).show(supportFragmentManager, "---")
+
                         } else {
                             ToastUtils.showShort(getString(R.string.failed_permission))
                         }
@@ -231,6 +241,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             } else {
                 addFile.visibility = View.GONE
                 editFile.visibility = View.GONE
+                ivVControl.visibility = View.GONE
                 ivSetting.visibility = View.GONE
 
 
@@ -297,6 +308,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     override fun onResume() {
         super.onResume()
+        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
         mViewModel.refreshFolderData(mCurFolderPath)
     }
 }

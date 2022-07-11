@@ -1,5 +1,6 @@
 package com.skybird.colorfulscanner.page.v
 
+import android.content.Intent
 import android.net.VpnService
 import android.view.MotionEvent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +14,7 @@ import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityVMainBinding
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.DataConversionUtils
+import com.skybird.colorfulscanner.utils.LogCSI
 import com.skybird.colorfulscanner.utils.MAX_WAIT_TIME
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -29,6 +31,17 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             if (it.resultCode == RESULT_OK) {
                 dealV()
+            }
+        }
+    private val selectedSer =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == RESULT_OK) {
+                it.data?.run {
+                    mViewModel.curSerName.value = getStringExtra("selectedName")
+                    mViewModel.curCircleNativeIcon.value =
+                        getIntExtra("selectedNative", R.drawable.ic_default_n)
+                    chV()
+                }
             }
         }
 
@@ -48,9 +61,21 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
         ssHelper.connect(this)
         ssHelper.trafficInfo = {
             binding.run {
+                LogCSI("it.rxRate ${it.rxRate}  --${it.txRate}")
                 tvDownSpeed.text = DataConversionUtils.byteToVMainRateStr(it.rxRate)
                 tvUploadSpeed.text = DataConversionUtils.byteToVMainRateStr(it.txRate)
             }
+        }
+        mViewModel.run {
+            curSerName.observe(this@VMainActivity, {
+                binding.tvName.text = it
+            })
+            curCircleNativeIcon.observe(this@VMainActivity, {
+                binding.ivNative.setImageResource(it)
+            })
+            curConnectedTimeStr.observe(this@VMainActivity, {
+                binding.tvConnectionTime.text = it
+            })
         }
     }
 
@@ -60,11 +85,22 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
                 onBackPressed()
             }
             ivServer.setOnClickListener {
-                toNexAct(SerSelete1Activity::class.java)
+                selectedSer.launch(Intent().apply {
+                    setClass(this@VMainActivity, SerSelete1Activity::class.java)
+                })
             }
             ivConnection.setOnClickListener {
-                vPermission.launch(VpnService.prepare(this@VMainActivity))
+                chV()
             }
+        }
+    }
+
+    private fun chV() {
+        val intent = VpnService.prepare(this@VMainActivity)
+        if (intent == null) {
+            dealV()
+        } else {
+            vPermission.launch(intent)
         }
     }
 
@@ -73,30 +109,61 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
             val time = System.currentTimeMillis()
             val isConnectedAction = curState == BaseService.State.Stopped
             stateChange(if (isConnectedAction) BaseService.State.Connecting else BaseService.State.Stopping)
+            if (isConnectedAction)
+                mViewModel.choiceSer()
             delay(1000)
             while (System.currentTimeMillis() - time < MAX_WAIT_TIME) {
-                if (isResume) {
-
+                if (!isResume) {
+                    mViewModel.reset()
+                    stateChange(if (!isConnectedAction) BaseService.State.Connecting else BaseService.State.Stopping)
+                    return@launch
                 }
+                delay(1000)
             }
-            if (isConnectedAction) {
-                Core.startService()
-            } else {
-                Core.stopService()
-            }
+            mViewModel.toggle(isConnectedAction)
         }
     }
 
     private fun stateChange(state: BaseService.State) {
         when (state) {
-            BaseService.State.Idle -> TODO()
-            BaseService.State.Connecting -> TODO()
-            BaseService.State.Connected -> TODO()
-            BaseService.State.Stopping -> TODO()
-            BaseService.State.Stopped -> TODO()
+            BaseService.State.Idle -> stopAnimation()
+            BaseService.State.Connecting -> connectingUi()
+            BaseService.State.Connected -> {
+                if (curState == BaseService.State.Connecting) {
+                    if (isResume) {
+                        toNexAct(Result1Activity::class.java)
+                    }
+                }
+                mViewModel.connected()
+                stopAnimation()
+            }
+            BaseService.State.Stopping -> connectingUi()
+
+            BaseService.State.Stopped -> {
+                if (curState == BaseService.State.Stopping) {
+                    if (isResume) {
+                        toNexAct(Result1Activity::class.java)
+                    }
+                }
+                mViewModel.stopped()
+                stopAnimation()
+            }
+        }
+        curState = state
+    }
+
+    private fun connectingUi() {
+        binding.run {
+            lottieAnimation.playAnimation()
         }
     }
 
+    private fun stopAnimation() {
+        binding.run {
+            lottieAnimation.progress = 0f
+            lottieAnimation.cancelAnimation()
+        }
+    }
 
     override fun onStart() {
         super.onStart()

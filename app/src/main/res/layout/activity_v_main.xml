@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
@@ -48,7 +47,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="0dp"
-                android:layout_height="50dp"
+                android:layout_height="56dp"
                 android:gravity="center"
                 android:singleLine="true"
                 android:text="@string/v_title"
@@ -177,9 +176,10 @@
             android:layout_width="match_parent"
             android:layout_height="211dp"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="-10dp"
+            android:layout_marginTop="-8dp"
             android:layout_marginRight="16dp"
             android:background="@drawable/bg_ad_splace"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/iv_connection" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

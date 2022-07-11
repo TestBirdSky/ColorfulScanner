@@ -47,4 +47,11 @@
     <string name="text_upload">UPLOAD</string>
     <string name="text_down">DOWNLOAD</string>
     <string name="select_server_title">Select Server</string>
+    <string name="connect_status_connected">Connected succeeded</string>
+    <string name="connect_status_disconnected">Disconnected succeeded</string>
+    <string name="common_sure">Sure</string>
+    <string name="permission_open_tips">Permission is insufficient, do you want to go to the mobile phone system to enable the application permission?</string>
+    <string name="disconnected_tips">Are you currently in a connected state and need to disconnect after reconnecting? Are you sure you want to disconnect the current connection?</string>
+
+
 </resources>

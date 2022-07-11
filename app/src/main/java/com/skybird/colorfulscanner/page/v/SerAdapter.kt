@@ -9,15 +9,24 @@ import androidx.recyclerview.widget.RecyclerView
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.databinding.ItemSerS1Binding
 import com.skybird.colorfulscanner.utils.CSUtils
+import com.skybird.colorfulscanner.utils.LogCSI
+import com.skybird.colorfulscanner.utils.getCurSelectedName
 
 /**
  * Date：2022/7/8
  * Describe:
  */
-var curSelectedName = ""
+
 
 class SerAdapter(val click: (data: SerUiBean) -> Unit) :
-    ListAdapter<SerUiBean, SerViewHolder>(Diff()) {
+    RecyclerView.Adapter<SerViewHolder>() {
+    var curSelectedName = getCurSelectedName()
+    var currentList = arrayListOf<SerUiBean>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SerViewHolder {
         return SerViewHolder(
             DataBindingUtil.inflate(
@@ -25,41 +34,40 @@ class SerAdapter(val click: (data: SerUiBean) -> Unit) :
                 R.layout.item_ser_s1,
                 parent,
                 false,
-
-                )
+            )
         ) {
             itemClick(it)
         }
     }
 
     override fun onBindViewHolder(holder: SerViewHolder, position: Int) {
-        holder.bind(currentList[position])
+        holder.bind(currentList[position], curSelectedName)
     }
 
     private fun itemClick(data: SerUiBean) {
         curSelectedName = data.name
-        for (i in currentList) {
-            i.isChecked = i.name == curSelectedName
-        }
-        submitList(currentList)
+        notifyDataSetChanged()
         click.invoke(data)
     }
+
+    fun reset() {
+        curSelectedName = getCurSelectedName()
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount() = currentList.size
 }
 
 class SerViewHolder(val binding: ItemSerS1Binding, val itemClick: (data: SerUiBean) -> Unit) :
     RecyclerView.ViewHolder(binding.root) {
-    fun bind(data: SerUiBean) {
+
+    fun bind(data: SerUiBean, selectedName: String) {
         binding.run {
             item.text = data.name
-            item.isChecked = curSelectedName == data.name
+            item.isChecked = selectedName == data.name
             iv.setImageResource(CSUtils.getCircleNIcon(data.native))
-            item.setOnCheckedChangeListener { _, isChecked ->
-                if (!isChecked && curSelectedName == data.name) {
-                    item.isChecked = true
-                }
-                if (isChecked && curSelectedName != data.name) {
-                    itemClick.invoke(data)
-                }
+            item.setOnClickListener {
+                itemClick.invoke(data)
             }
             executePendingBindings()
         }
@@ -67,14 +75,3 @@ class SerViewHolder(val binding: ItemSerS1Binding, val itemClick: (data: SerUiBe
 }
 
 data class SerUiBean(val name: String, val native: String, var isChecked: Boolean = false)
-
-class Diff : DiffUtil.ItemCallback<SerUiBean>() {
-    override fun areItemsTheSame(oldItem: SerUiBean, newItem: SerUiBean): Boolean {
-        return oldItem.name == newItem.name
-    }
-
-    override fun areContentsTheSame(oldItem: SerUiBean, newItem: SerUiBean): Boolean {
-        return oldItem.isChecked == newItem.isChecked
-    }
-
-}
