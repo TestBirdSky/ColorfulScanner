@@ -3,16 +3,16 @@ package com.skybird.colorfulscanner.page
 import android.text.TextUtils
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
+import com.skybird.colorfulscanner.cpad.CPAdUtils
 import com.skybird.colorfulscanner.databinding.AcMoveFileBinding
 import com.skybird.colorfulscanner.dialog.LoadingDialog
 import com.skybird.colorfulscanner.page.main.FileType
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -29,6 +29,7 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
     override fun layoutId() = R.layout.ac_move_file
 
     override fun initUI() {
+        CPAdUtils.loadAddFileAd()
         binding.run {
             ivBack.setOnClickListener {
                 onBackPressed()
@@ -47,8 +48,9 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
                         loadingDialog.dismiss()
                         if (isSuccess) {
                             ToastUtils.showShort(R.string.move_file_success)
-                            setResult(RESULT_OK)
-                            onBackPressed()
+                            if (!showAd()) {
+                                finish()
+                            }
                         } else {
                             ToastUtils.showShort(R.string.move_file_failed)
                         }
@@ -73,5 +75,10 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
         }
     }
 
-
+    private fun showAd(): Boolean {
+        return CPAdUtils.showFileControlAd(this) {
+            if (CSApp.isAppResume) CPAdUtils.loadAddFileAd()
+            finish()
+        }
+    }
 }

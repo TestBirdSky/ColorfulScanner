@@ -1,0 +1,62 @@
+{
+  "cp1_sp": [
+    {
+      "cp1_t": "0",
+      "cp1_pro": 1,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/8691691433x"
+    },
+    {
+      "cp1_t": "o",
+      "cp1_pro": 3,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/3419835294"
+    },
+    {
+      "cp1_t": "o",
+      "cp1_pro": 2,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/3419835294x"
+    }
+  ],
+  "cp1_a_f_i": [
+    {
+      "cp1_t": "i",
+      "cp1_pro": 2,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/8691691433xx"
+    },
+    {
+      "cp1_t": "i",
+      "cp1_pro": 1,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/1033173712x"
+    },
+    {
+      "cp1_t": "i",
+      "cp1_pro": 3,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/1033173712"
+    }
+  ],
+  "cp1_filter_i": [
+    {
+      "cp1_t": "i",
+      "cp1_pro": 2,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/1033173712xx"
+    },
+    {
+      "cp1_t": "i",
+      "cp1_pro": 1,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/8691691433"
+    },
+    {
+      "cp1_t": "i",
+      "cp1_pro": 3,
+      "cp1_p": "admob",
+      "cp1_id": "ca-app-pub-3940256099942544/1033173712xx"
+    }
+  ]
+}

@@ -26,6 +26,11 @@
         android:theme="@style/Theme.ColorfulScanner"
         android:usesCleartextTraffic="true">
 
+
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="@string/admob_id" />
+
         <meta-data
             android:name="ScopedStorage"
             android:value="true" />

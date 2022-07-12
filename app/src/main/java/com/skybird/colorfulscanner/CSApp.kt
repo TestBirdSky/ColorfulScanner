@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.os.Process
 import com.github.shadowsocks.Core
+import com.google.android.gms.ads.MobileAds
 import com.skybird.colorfulscanner.page.StartUpActivity
 import com.skybird.colorfulscanner.utils.ConfigureManager
 import com.skybird.colorfulscanner.utils.DEFAULT_SERVER_NAME
@@ -25,6 +26,7 @@ class CSApp : Application() {
             mApp = this
             registerActivityLifecycleCallbacks(CSACL())
             ConfigureManager.loadRemoteConfigure()
+            MobileAds.initialize(this)
         }
     }
 

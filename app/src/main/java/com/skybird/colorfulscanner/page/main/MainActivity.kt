@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.SimpleItemAnimator
 import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
@@ -12,6 +11,7 @@ import com.hjq.permissions.XXPermissions
 import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
+import com.skybird.colorfulscanner.cpad.CPAdUtils
 import com.skybird.colorfulscanner.databinding.ActivityMainBinding
 import com.skybird.colorfulscanner.dialog.CreateFileDialog
 import com.skybird.colorfulscanner.dialog.DeleteDialog
@@ -139,7 +139,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     toNexAct(MoveFileActivity::class.java, Bundle().apply {
                         putSerializable("moveFile", checkList)
                         putSerializable("noCheckedFile", noCheckFile)
-                    }, 1000)
+                    })
                 }
             }
             ivDel.setOnClickListener {
@@ -238,7 +238,8 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                 addFile.visibility = View.VISIBLE
                 editFile.visibility = View.VISIBLE
                 ivSetting.visibility = View.VISIBLE
-                ivVControl.visibility = View.VISIBLE
+                //v1.0.1 暂时屏蔽
+                ivVControl.visibility = View.GONE
 
 
                 tvName.visibility = View.INVISIBLE
@@ -275,17 +276,13 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     private fun showAddFileDialog() {
         LogCSI("showAddFileDialog")
+        CPAdUtils.loadAddFileAd()
         CreateFileDialog { name, dialog ->
+            dialog?.dismiss()
+            showAddFileAd()
             CSFileUtils.createFolder(mCurFolderPath, name)?.let {
                 mViewModel.addFileUiData(it)
             }
-            dialog?.dismiss()
-            //test data
-//            for (i in 0 until 100) {
-//                CSFileUtils.createFolder(mCurFolderPath, "$name--- i $i")?.let {
-//                    mViewModel.addFileUiData(it)
-//                }
-//            }
         }.show(supportFragmentManager, "addFile")
     }
 
@@ -318,12 +315,16 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     override fun onResume() {
         super.onResume()
-        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
+//        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
         mViewModel.refreshFolderData(mCurFolderPath)
     }
 
     override fun onDestroy() {
         recyclerViewHashMap.clear()
         super.onDestroy()
+    }
+
+    private fun showAddFileAd() {
+        CPAdUtils.showFileControlAd(this) { if (CSApp.isAppResume) CPAdUtils.loadAddFileAd() }
     }
 }

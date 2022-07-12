@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import com.google.android.gms.ads.AdActivity
 import com.skybird.colorfulscanner.CSApp.Companion.isAppResume
 import com.skybird.colorfulscanner.page.StartUpActivity
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -30,7 +31,6 @@ class CSACL : Application.ActivityLifecycleCallbacks {
             if (activity is StartUpActivity) {
 
             } else {
-
                 activity.toNexAct(StartUpActivity::class.java, Bundle().apply {
                     putBoolean("isHotReboot", true)
                 })
@@ -56,15 +56,15 @@ class CSACL : Application.ActivityLifecycleCallbacks {
 
     override fun onActivityStopped(activity: Activity) {
         LogCSI("onActivityStopped activity==$activity")
-//        if (activity is AdActivity) {
-//            CoroutineScope(Dispatchers.Main).launch {
-//                delay(2500L)
-//                if (leaveAppTime != -1L && (!isAppResume)&& !activity.isFinishing) {
-//                    LogCSI("onActivityStopped finish-->$activity")
-//                    activity.finish()
-//                }
-//            }
-//        }
+        if (activity is AdActivity) {
+            CoroutineScope(Dispatchers.Main).launch {
+                delay(2500L)
+                if (leaveAppTime != -1L && (!isAppResume)&& !activity.isFinishing) {
+                    LogCSI("onActivityStopped finish-->$activity")
+                    activity.finish()
+                }
+            }
+        }
     }
 
     override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {

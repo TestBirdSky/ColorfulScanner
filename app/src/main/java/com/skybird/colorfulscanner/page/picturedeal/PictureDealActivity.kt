@@ -10,8 +10,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
 import com.gyf.immersionbar.ImmersionBar
+import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
+import com.skybird.colorfulscanner.cpad.CPAdUtils
 import com.skybird.colorfulscanner.databinding.ActivityPictureDealBinding
 import com.skybird.colorfulscanner.dialog.BottomShareDialog
 import com.skybird.colorfulscanner.dialog.DeleteDialog
@@ -21,6 +23,7 @@ import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
 import com.theartofdev.edmodo.cropper.CropImageView
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -88,6 +91,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                     })
             }
         }
+        CPAdUtils.loadFilterAd()
     }
 
     private fun setListener() {
@@ -258,9 +262,16 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                 refreshPage()
             }
             PageStatus.FILTER -> {
-                pageState = PageStatus.NORMAL
-                curBitmap = filterAdapter.getCurSelectedBitmap()
-                refreshPage()
+                lifecycleScope.launch {
+                    pageState = PageStatus.NORMAL
+                    curBitmap = filterAdapter.getCurSelectedBitmap()
+                    if (showAd()) {
+                        loadingDialog.show(supportFragmentManager, "loading")
+                        delay(1000)
+                        loadingDialog.dismiss()
+                    }
+                    refreshPage()
+                }
             }
             PageStatus.SHARE -> {}
         }
@@ -328,6 +339,9 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                 PageStatus.FILTER -> binding.run {
                     ivNormal.setImageBitmap(curBitmap)
                 }
+                PageStatus.TAILOR, PageStatus.ROTATE -> {
+                    curBitmap?.let { binding.cropImageView.setImageBitmap(curBitmap) }
+                }
             }
             pageState = PageStatus.NORMAL
             refreshPage()
@@ -336,5 +350,13 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
 
     enum class PageStatus {
         NORMAL, TAILOR, ROTATE, FILTER, SHARE
+    }
+
+    private fun showAd(): Boolean {
+        return CPAdUtils.showFilterAd(this) {
+            if (CSApp.isAppResume) {
+                CPAdUtils.loadFilterAd()
+            }
+        }
     }
 }

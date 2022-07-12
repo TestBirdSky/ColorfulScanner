@@ -55,30 +55,40 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.skybird.colorfulscanner.page.picturedeal.MyCropImageView
-            android:id="@+id/cropImageView"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginBottom="26dp"
-            android:layout_marginTop="14dp"
-            android:visibility="gone"
-            app:cropBackgroundColor="#99020718"
-            app:cropBorderCornerColor="@android:color/white"
-            app:cropBorderCornerOffset="0dp"
-            app:cropBorderCornerThickness="3dp"
-            app:cropBorderLineColor="#00000000"
-            app:cropBorderLineThickness="1dp"
-            app:cropGuidelines="on"
-            app:cropGuidelinesColor="@android:color/white"
-            app:cropInitialCropWindowPaddingRatio="0"
-            app:cropSnapRadius="0dp"
             app:layout_constraintBottom_toTopOf="@id/ivRightRotate"
-            app:layout_constraintTop_toBottomOf="@id/title_layout" />
+            app:layout_constraintTop_toBottomOf="@id/title_layout">
+
+            <com.skybird.colorfulscanner.page.picturedeal.MyCropImageView
+                android:id="@+id/cropImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:cropBackgroundColor="#99020718"
+                app:cropBorderCornerColor="@android:color/white"
+                app:cropBorderCornerOffset="0dp"
+                app:cropBorderCornerThickness="3dp"
+                app:cropBorderLineColor="#00000000"
+                app:cropBorderLineThickness="1dp"
+                app:cropGuidelines="on"
+                app:cropGuidelinesColor="@android:color/white"
+                app:cropInitialCropWindowPaddingRatio="0"
+                app:cropSnapRadius="0dp" />
+        </RelativeLayout>
+
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/ivNormal"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="16dp"
             android:layout_marginBottom="40dp"
             app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
             app:layout_constraintTop_toBottomOf="@id/title_layout" />
@@ -90,7 +100,7 @@
             android:layout_marginEnd="50dp"
             android:layout_marginBottom="60dp"
             android:src="@drawable/ic_rotate_right_90"
-            android:visibility="gone"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@id/ivLeftRotate"
             app:layout_constraintRight_toRightOf="parent" />
