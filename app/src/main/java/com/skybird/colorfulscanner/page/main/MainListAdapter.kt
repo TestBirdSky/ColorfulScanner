@@ -133,7 +133,7 @@ class MainListAdapter(
         data.addAll(datas)
         submitList(datas)
         LogCSI("refreshAllData---${datas.size}")
-        notifyDataSetChanged()
+//        notifyDataSetChanged()
     }
 
     fun getAllImageUrl(): List<String> {

@@ -29,6 +29,8 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         var mCurFolderPath = CSFileUtils.CS_EXTERNAL_FOLDER_TOP
     }
 
+    val recyclerViewHashMap = hashMapOf<String, RecyclerView>()
+
     lateinit var mCurAdapter: MainListAdapter
     private val mViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
 
@@ -45,24 +47,28 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         mViewModel.run {
             curFileUiData.observe(this@MainActivity, {
                 LogCSI("data change size==>${it.size}")
-//                mAdapter.refreshAllData(it)
                 refreshRecycleView(it)
                 setNullLayout(it.size == 0)
+                refreshLayout()
             })
             curFolderPath.observe(this@MainActivity, {
                 LogCSI("curFolderPath==>${it}")
                 mCurFolderPath = it
-                if (mCurAdapter.isShowEditList) {
-                    if (mCurAdapter.itemCount > 0) {
-                        showEditFileUi()
-                    } else {
-                        mCurAdapter.isShowEditList = false
-                        refreshNormalUi()
-                    }
-                } else {
-                    refreshNormalUi()
-                }
+                refreshLayout()
             })
+        }
+    }
+
+    private fun refreshLayout() {
+        if (mCurAdapter.isShowEditList) {
+            if (mCurAdapter.itemCount > 0) {
+                showEditFileUi()
+            } else {
+                mCurAdapter.isShowEditList = false
+                refreshNormalUi()
+            }
+        } else {
+            refreshNormalUi()
         }
     }
 
@@ -157,7 +163,18 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
     }
 
     private fun refreshRecycleView(data: ArrayList<FileUiBean>) {
-        val rv = RecyclerView(this@MainActivity).apply {
+        var rv = recyclerViewHashMap[mCurFolderPath]
+        if (rv == null) {
+            rv = addRv()
+        }
+        mCurAdapter = rv.adapter as MainListAdapter
+        mCurAdapter.refreshAllData(data)
+        binding.rvContainer.removeAllViews()
+        binding.rvContainer.addView(rv)
+    }
+
+    private fun addRv(): RecyclerView {
+        return RecyclerView(this@MainActivity).apply {
             layoutManager = MyGridLayoutManager(this@MainActivity, 3)
             mCurAdapter = MainListAdapter({ itemClick(it) },
                 { showEditFileNameDialog(it) },
@@ -170,18 +187,11 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
                     }
                 })
             adapter = mCurAdapter
-            mCurAdapter.refreshAllData(data)
-            itemAnimator?.let {
-                if (it is SimpleItemAnimator) {
-                    it.supportsChangeAnimations = false
-                }
-            }
             itemAnimator?.changeDuration = 0
             itemAnimator?.addDuration = 0
             itemAnimator?.removeDuration = 0
+            recyclerViewHashMap[mCurFolderPath] = this
         }
-        binding.rvContainer.removeAllViews()
-        binding.rvContainer.addView(rv)
     }
 
     private fun itemClick(uiBean: FileUiBean) {
@@ -310,5 +320,10 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
         super.onResume()
         binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
         mViewModel.refreshFolderData(mCurFolderPath)
+    }
+
+    override fun onDestroy() {
+        recyclerViewHashMap.clear()
+        super.onDestroy()
     }
 }

@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.content.res.AssetManager
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.github.shadowsocks.database.Profile
@@ -35,7 +37,15 @@ object CSUtils {
     }
 
     fun getCircleNIcon(nati: String): Int {
-        return R.drawable.ic_default_n
+        return when (nati) {
+            NATION_GERMANY -> R.drawable.ic_n_circle_germany
+            NATION_FRANCE -> R.drawable.ic_n_circle_france
+            NATION_JAPAN -> R.drawable.ic_n_circle_japan
+            NATION_UNITEDSTATES -> R.drawable.ic_n_circle_unitedstates
+            NATION_UNITEDKINGDOM -> R.drawable.ic_n_circle_unitedkingdom
+            else -> R.drawable.ic_default_n
+        }
+
     }
 
     fun setProfile(server: SerBean) {
@@ -84,4 +94,30 @@ object CSUtils {
         return stringBuilder.toString()
     }
 
+    fun hasNetwork(): Boolean {
+        val cm = CSApp.mApp
+            .getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        //如果仅仅是用来判断网络连接 //则可以使用 cm.getActiveNetworkInfo().isAvailable();
+        val info = cm.allNetworkInfo
+        for (i in info.indices) {
+            if (info[i].state == NetworkInfo.State.CONNECTED) {
+                return true
+            }
+        }
+        return false
+    }
+
+
+//
+//    fun getNCIByName(nation: String?): Int {
+//        return when (nation) {
+//            CardConstant.NATION_GERMANY -> R.drawable.ic_n_circle_germany
+//            CardConstant.NATION_UNITEDKINGDOM -> R.drawable.ic_n_circleunited_kingdom
+//            CardConstant.NATION_UNITEDSTATES -> R.drawable.ic_n_circle_unitedstates
+//            CardConstant.NATION_JAPAN -> R.drawable.ic_n_circle_japan
+//            CardConstant.NATION_FRANCE -> R.drawable.ic_n_circle_france
+//            else -> R.drawable.ic_n_c_default
+//        }
+//    }
+//
 }

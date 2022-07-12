@@ -42,4 +42,5 @@ class CSApp : Application() {
     var connectedTime: Long = -1L
     var connectedIcon: Int = R.drawable.ic_default_n
     var isConnectedV = false
+    var originScaledDensity = -1f
 }

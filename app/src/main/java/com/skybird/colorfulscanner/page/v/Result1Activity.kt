@@ -25,6 +25,10 @@ class Result1Activity : BaseDataBindingAc<AcResult1Binding>() {
             ivBack.setOnClickListener {
                 onBackPressed()
             }
+            if (CSApp.mApp.isConnectedV){
+                centerPB.progressBarColorStart= getColor(R.color.blue_5056F2)
+                centerPB.progressBarColorEnd= getColor(R.color.blue_C82DFB)
+            }
         }
     }
 

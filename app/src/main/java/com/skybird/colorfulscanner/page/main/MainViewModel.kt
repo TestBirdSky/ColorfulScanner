@@ -1,5 +1,6 @@
 package com.skybird.colorfulscanner.page.main
 
+import android.text.TextUtils
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.FileUtils
@@ -20,12 +21,14 @@ class MainViewModel : ViewModel() {
     val curFileUiData = MutableLiveData<ArrayList<FileUiBean>>()
 
     fun refreshFolderData(folder: String) {
+        if (!TextUtils.equals(curFolderPath.value, folder)) {
+            curFolderPath.value = folder
+        }
         curFileUiData.value = DataConversionUtils.fileToFileUiBean(
             CSFileUtils.getAllFileByFileName(
                 folder
             )
         )
-        curFolderPath.value = folder
     }
 
     fun addFileUiData(file: File) {

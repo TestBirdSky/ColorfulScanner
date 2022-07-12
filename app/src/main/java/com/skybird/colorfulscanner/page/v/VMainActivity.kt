@@ -7,12 +7,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
+import com.blankj.utilcode.util.ToastUtils
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.bg.BaseService
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.databinding.ActivityVMainBinding
 import com.skybird.colorfulscanner.toNexAct
+import com.skybird.colorfulscanner.utils.CSUtils
 import com.skybird.colorfulscanner.utils.DataConversionUtils
 import com.skybird.colorfulscanner.utils.LogCSI
 import com.skybird.colorfulscanner.utils.MAX_WAIT_TIME
@@ -105,6 +107,10 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
     }
 
     private fun dealV() {
+        if (!CSUtils.hasNetwork()) {
+            ToastUtils.showShort(R.string.connect_network_tips)
+            return
+        }
         lifecycleScope.launch {
             val time = System.currentTimeMillis()
             val isConnectedAction = curState == BaseService.State.Stopped

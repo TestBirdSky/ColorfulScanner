@@ -131,19 +131,6 @@
             app:layout_constraintTop_toBottomOf="@id/title_layout"
             app:layout_constraintVertical_weight="1" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="#F8F8FC"
-            android:paddingLeft="4dp"
-            android:paddingTop="8dp"
-            android:paddingRight="4dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title_layout"
-            app:layout_constraintVertical_weight="1" />
-
         <FrameLayout
             android:id="@+id/rvContainer"
             android:layout_width="match_parent"

@@ -5,7 +5,6 @@ import android.net.Uri
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
@@ -22,11 +21,7 @@ import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
 import com.theartofdev.edmodo.cropper.CropImageView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
-import java.net.URI
 import kotlin.random.Random
 
 /**
@@ -46,6 +41,10 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
     private val filterAdapter by lazy { FilterAdapter { filterItemClick(it) } }
 
     private val loadingDialog = LoadingDialog()
+
+    override fun preInit() {
+        isUseDefaultDensity = true
+    }
 
     override fun layoutId() = R.layout.activity_picture_deal
 
@@ -160,7 +159,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
             cropImageView.guidelines = CropImageView.Guidelines.ON
 
             ivLeftRotate.visibility = View.GONE
-            ivRightRotate.visibility = View.GONE
+            ivRightRotate.visibility = View.INVISIBLE
 
             ivNormal.visibility = View.GONE
             filterRv.visibility = View.GONE
@@ -206,7 +205,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
         binding.run {
             cropImageView.visibility = View.GONE
             ivLeftRotate.visibility = View.GONE
-            ivRightRotate.visibility = View.GONE
+            ivRightRotate.visibility = View.INVISIBLE
 
             ivNormal.visibility = View.VISIBLE
             filterRv.visibility = View.VISIBLE
@@ -232,7 +231,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
             cropImageView.visibility = View.GONE
             filterRv.visibility = View.GONE
             ivLeftRotate.visibility = View.GONE
-            ivRightRotate.visibility = View.GONE
+            ivRightRotate.visibility = View.INVISIBLE
 
 
             titleLayout.setBackgroundColor(getColor(R.color.white))
