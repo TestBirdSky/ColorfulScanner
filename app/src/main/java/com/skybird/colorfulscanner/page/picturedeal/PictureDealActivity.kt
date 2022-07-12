@@ -340,7 +340,9 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                     ivNormal.setImageBitmap(curBitmap)
                 }
                 PageStatus.TAILOR, PageStatus.ROTATE -> {
-                    curBitmap?.let { binding.cropImageView.setImageBitmap(curBitmap) }
+                    curBitmap?.let {
+                        binding.cropImageView.setImageBitmap(curBitmap)
+                    }
                 }
             }
             pageState = PageStatus.NORMAL
