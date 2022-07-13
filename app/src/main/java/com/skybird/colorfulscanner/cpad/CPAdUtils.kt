@@ -3,6 +3,7 @@ package com.skybird.colorfulscanner.cpad
 import android.app.Activity
 import com.google.android.gms.ads.appopen.AppOpenAd
 import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.nativead.NativeAd
 import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.bean.CP1ConBean
 import com.skybird.colorfulscanner.utils.MAX_WAIT_TIME
@@ -18,6 +19,10 @@ object CPAdUtils {
     private val splashDataWrap by lazy { AdDataWrap(Space.OPEN, MAX_WAIT_TIME, 1) }
     private val addFileDataWrap by lazy { AdDataWrap(Space.FILE) }
     private val filterDataWrap by lazy { AdDataWrap(Space.FILTER) }
+    private val homeNativeDataWrap by lazy { AdDataWrap(Space.HOME) }
+    private val resultDataWrap by lazy { AdDataWrap(Space.RESULT) }
+    private val connectDataWrap by lazy { AdDataWrap(Space.CONNECT) }
+    private val backDataWrap by lazy { AdDataWrap(Space.BACK) }
 
     fun loadSplashAd() {
         loadAd(splashDataWrap)
@@ -29,6 +34,22 @@ object CPAdUtils {
 
     fun loadFilterAd() {
         loadAd(filterDataWrap)
+    }
+
+    fun loadHomeNAd() {
+        loadAd(homeNativeDataWrap)
+    }
+
+    fun loadResultNAd() {
+        loadAd(resultDataWrap)
+    }
+
+    fun loadConnectionAd() {
+        loadAd(connectDataWrap)
+    }
+
+    fun loadBackAd() {
+        loadAd(backDataWrap)
     }
 
     private fun loadAd(dataWrap: AdDataWrap) {
@@ -43,7 +64,7 @@ object CPAdUtils {
         if (iterator1.hasNext()) {
             dataWrap.isLoading = true
             loadAd(iterator1, dataWrap)
-        }else{
+        } else {
             adLogE("loadAd errr null config")
         }
     }
@@ -95,6 +116,38 @@ object CPAdUtils {
         return showAd(activity, filterDataWrap, closeAd, {})
     }
 
+    fun showBackAd(
+        activity: Activity,
+        closeAd: () -> Unit,
+    ): Boolean {
+        return showAd(activity, backDataWrap, closeAd, {})
+    }
+
+    fun showConnectionAd(
+        activity: Activity,
+        closeAd: () -> Unit,
+    ): Boolean {
+        return showAd(activity, connectDataWrap, closeAd, {})
+    }
+
+    fun showHomeNAd(): NativeAd? {
+        val data = homeNativeDataWrap.removeData()
+        if (data is NativeAd) {
+            adLogI("showAd ---${homeNativeDataWrap.name}")
+            return data
+        }
+        return null
+    }
+
+    fun showResultNAd(): NativeAd? {
+        val data = resultDataWrap.removeData()
+        if (data is NativeAd) {
+            adLogI("showAd ---${resultDataWrap.name}")
+            return data
+        }
+        return null
+    }
+
     private fun showAd(
         activity: Activity,
         dataWrap: AdDataWrap,
@@ -109,6 +162,7 @@ object CPAdUtils {
             is AppOpenAd -> adImpl.showOpenAd(activity, data, callback)
             else -> return false
         }
+        adLogI("showAd ---> ${dataWrap.name}")
         return true
     }
 }

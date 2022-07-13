@@ -1,5 +1,6 @@
 package com.skybird.colorfulscanner.page.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.lifecycle.ViewModelProvider
@@ -33,7 +34,8 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     lateinit var mCurAdapter: MainListAdapter
     private val mViewModel by lazy { ViewModelProvider(this).get(MainViewModel::class.java) }
-
+    private val MOVE_FILE_REQUEST_CODE = 1000
+    private var isRefreshPage = true
     override fun layoutId(): Int {
         return R.layout.activity_main
     }
@@ -130,20 +132,22 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
             ivSetting.setOnClickListener {
                 toNexAct(SettingActivity::class.java)
             }
-            ivMove.setOnClickListener {
+            tvMove.setOnClickListener {
                 val checkList = mCurAdapter.getAllCheckedList()
                 val noCheckFile = mCurAdapter.getNoCheckedFolderList()
-                if (noCheckFile.size == 0) {
-                    ToastUtils.showShort(R.string.move_file_error)
-                } else if (checkList.size > 0) {
+                if (checkList.size > 0 && noCheckFile.size > 0) {
                     toNexAct(MoveFileActivity::class.java, Bundle().apply {
                         putSerializable("moveFile", checkList)
                         putSerializable("noCheckedFile", noCheckFile)
-                    })
+                    }, MOVE_FILE_REQUEST_CODE)
+                    isRefreshPage = false
                 }
             }
-            ivDel.setOnClickListener {
-                showDelFileDialog()
+            tvDel.setOnClickListener {
+                val checkList = mCurAdapter.getAllCheckedList()
+                if (checkList.size > 0) {
+                    showDelFileDialog()
+                }
             }
             ivBack.setOnClickListener {
                 onBackPressed()
@@ -175,18 +179,20 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     private fun addRv(): RecyclerView {
         return RecyclerView(this@MainActivity).apply {
-            layoutManager = MyGridLayoutManager(this@MainActivity, 3)
             mCurAdapter = MainListAdapter({ itemClick(it) },
                 { showEditFileNameDialog(it) },
                 { isCanDel, isCanMove ->
                     binding.run {
                         tvDel.alpha = if (isCanDel) 1f else 0.4f
+                        tvDel.isEnabled = isCanDel
                         ivDel.alpha = if (isCanDel) 1f else 0.4f
                         tvMove.alpha = if (isCanMove) 1f else 0.4f
+                        tvMove.isEnabled = isCanMove
                         ivMove.alpha = if (isCanMove) 1f else 0.4f
                     }
                 })
             adapter = mCurAdapter
+            layoutManager = MyGridLayoutManager(this@MainActivity, 3)
             itemAnimator?.changeDuration = 0
             itemAnimator?.addDuration = 0
             itemAnimator?.removeDuration = 0
@@ -316,7 +322,23 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
     override fun onResume() {
         super.onResume()
 //        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
-        mViewModel.refreshFolderData(mCurFolderPath)
+        if (isRefreshPage) {
+            mViewModel.refreshFolderData(mCurFolderPath)
+        }
+        isRefreshPage = true
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                MOVE_FILE_REQUEST_CODE -> {
+                    mViewModel.refreshFolderData(mCurFolderPath)
+                    mCurAdapter.isShowEditList = false
+                    refreshNormalUi()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {

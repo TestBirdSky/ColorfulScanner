@@ -16,6 +16,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.databinding.EditFileNameDialogBinding
 import com.skybird.colorfulscanner.utils.CSUtils
+import com.skybird.colorfulscanner.utils.LogCSI
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -57,10 +58,14 @@ class CreateFileDialog(
             edit.setText(editContent)
             edit.setSelection(editContent.length)
             tvSave.setOnClickListener {
-                val s = edit.text.toString()
+                var s = edit.text.toString()
                 if (TextUtils.isEmpty(s)) {
                     ToastUtils.showShort(R.string.input_name_tips)
                 } else {
+                    if (s.contains("/")) {
+                        s = s.replace("/", "_")
+                    }
+                    LogCSI("s-->$s")
                     onNegative.invoke(s, dialog)
                 }
             }

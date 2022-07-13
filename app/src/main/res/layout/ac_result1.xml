@@ -117,11 +117,7 @@
             android:id="@+id/adLayout"
             android:layout_width="match_parent"
             android:layout_height="314dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="24dp"
-            android:layout_marginRight="16dp"
-            android:background="@drawable/bg_ad_splace"
-            android:visibility="gone"
+            android:background="@drawable/cp1_re_ad_placeholder"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvStatus" />

@@ -54,7 +54,7 @@ class MainListAdapter(
         private val tvNum = view.findViewById<TextView>(R.id.tv_num)
         private val itemChecked = view.findViewById<CheckBox>(R.id.item_check)
 
-        fun bind(bean: FileUiBean) {
+        fun bind(bean: FileUiBean, position: Int) {
             tvNum.text = "${bean.pictureNum}"
             tvNum.visibility = if (bean.pictureNum > 0) View.VISIBLE else View.GONE
             if (bean.fileType == FileType.FOLDER) {
@@ -84,12 +84,15 @@ class MainListAdapter(
                 }
             }
             tvName.setOnClickListener {
-                itemNameClickListener.invoke(bean)
+                if (bean.fileType != FileType.IMAGE) {
+                    itemNameClickListener.invoke(bean)
+                }
             }
         }
     }
 
     private fun setData(bean: FileUiBean) {
+        LogCSI("setData $bean")
         if (bean.isChecked) {
             checkedList.add(bean)
         } else {
@@ -121,7 +124,7 @@ class MainListAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(data[position])
+        holder.bind(data[position], position)
     }
 
     override fun getItemCount(): Int {
@@ -129,11 +132,21 @@ class MainListAdapter(
     }
 
     fun refreshAllData(datas: ArrayList<FileUiBean>) {
+        if (isShowEditList) {
+            checkedList.clear()
+            noCheckedFolderList.clear()
+            for (da in datas) {
+                if (da.fileType == FileType.FOLDER) {
+                    noCheckedFolderList.add(da)
+                }
+            }
+        }
         data.clear()
         data.addAll(datas)
-        submitList(datas)
-        LogCSI("refreshAllData---${datas.size}")
-        notifyDataSetChanged()
+        submitList(datas) {
+            LogCSI("callback---${datas.size}")
+            notifyDataSetChanged()
+        }
     }
 
     fun getAllImageUrl(): List<String> {
@@ -157,6 +170,7 @@ class MainListAdapter(
 
 class DiffUI : DiffUtil.ItemCallback<FileUiBean>() {
     override fun areItemsTheSame(oldItem: FileUiBean, newItem: FileUiBean): Boolean {
+        LogCSI("areItemsTheSame---> ${oldItem.filePath == newItem.filePath} ---${oldItem}--${newItem}")
         return oldItem.filePath == newItem.filePath
     }
 

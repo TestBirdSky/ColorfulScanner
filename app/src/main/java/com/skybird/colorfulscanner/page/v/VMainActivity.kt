@@ -3,15 +3,25 @@ package com.skybird.colorfulscanner.page.v
 import android.content.Intent
 import android.net.VpnService
 import android.view.MotionEvent
+import android.view.View
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.get
 import androidx.lifecycle.lifecycleScope
+import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.github.shadowsocks.Core
 import com.github.shadowsocks.bg.BaseService
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdView
+import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
+import com.skybird.colorfulscanner.cpad.CPAdUtils
 import com.skybird.colorfulscanner.databinding.ActivityVMainBinding
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSUtils
@@ -111,6 +121,8 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
             ToastUtils.showShort(R.string.connect_network_tips)
             return
         }
+        CPAdUtils.loadConnectionAd()
+        CPAdUtils.loadResultNAd()
         lifecycleScope.launch {
             val time = System.currentTimeMillis()
             val isConnectedAction = curState == BaseService.State.Stopped
@@ -123,10 +135,23 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
                     mViewModel.reset()
                     stateChange(if (!isConnectedAction) BaseService.State.Connecting else BaseService.State.Stopping)
                     return@launch
+                } else {
+                    if (showConnectionAd()) {
+                        break
+                    }
                 }
                 delay(1000)
             }
             mViewModel.toggle(isConnectedAction)
+        }
+    }
+
+    private fun showConnectionAd(): Boolean {
+        return CPAdUtils.showConnectionAd(this) {
+            if (CSApp.isAppResume) {
+                CPAdUtils.loadConnectionAd()
+                toNexAct(Result1Activity::class.java)
+            }
         }
     }
 
@@ -183,6 +208,8 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
 
     override fun onDestroy() {
         ssHelper.disconnect()
+        curNativeAd?.destroy()
+        curNativeAd = null
         super.onDestroy()
     }
 
@@ -192,4 +219,86 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
         }
         return true
     }
+
+    private var curNativeAd: NativeAd? = null
+
+    override fun onResume() {
+        super.onResume()
+        if (curNativeAd == null) {
+            loadNativeAd()
+        }
+    }
+
+
+    private fun loadNativeAd() {
+        lifecycleScope.launch {
+            CPAdUtils.loadHomeNAd()
+            delay(500)
+            var isSuccess = false
+            while (isResume && !isSuccess) {
+                val ad = CPAdUtils.showHomeNAd()
+                ad?.let {
+                    curNativeAd?.destroy()
+                    curNativeAd = it
+                    showNativeAdUi(it)
+                    CPAdUtils.loadHomeNAd()
+                    isSuccess = true
+                }
+                delay(100)
+            }
+        }
+    }
+
+    private fun showNativeAdUi(nativeAd: NativeAd) {
+        val adView = layoutInflater
+            .inflate(R.layout.home_native_layout, null) as NativeAdView
+
+        // Set the media view.
+        adView.mediaView = adView.findViewById(R.id.media_view)
+
+        // Set other ad assets.
+        adView.headlineView = adView.findViewById(R.id.ad_headline)
+        adView.callToActionView = adView.findViewById(R.id.ad_call_to_action)
+        adView.iconView = adView.findViewById(R.id.ad_app_icon)
+        adView.bodyView = adView.findViewById(R.id.ad_body)
+
+        (adView.headlineView as TextView).text = nativeAd.headline
+        adView.mediaView.setMediaContent(nativeAd.mediaContent)
+
+        if (nativeAd.body == null) {
+            adView.bodyView.visibility = View.INVISIBLE
+        } else {
+            adView.bodyView.visibility = View.VISIBLE
+            (adView.bodyView as TextView).text = nativeAd.body
+        }
+
+        if (nativeAd.callToAction == null) {
+            adView.callToActionView.visibility = View.INVISIBLE
+        } else {
+            adView.callToActionView.visibility = View.VISIBLE
+            (adView.callToActionView as Button).text = nativeAd.callToAction
+        }
+
+        if (nativeAd.icon == null) {
+            adView.iconView.visibility = View.GONE
+        } else {
+            (adView.iconView as ImageView).setImageDrawable(
+                nativeAd.icon.drawable
+            )
+            adView.iconView.visibility = View.VISIBLE
+        }
+
+        adView.setNativeAd(nativeAd)
+        binding.run {
+            val lap = (containerAd.layoutParams as ConstraintLayout.LayoutParams).apply {
+                marginEnd = ConvertUtils.dp2px(16f)
+                marginStart = ConvertUtils.dp2px(16f)
+            }
+            containerAd.layoutParams = lap
+            containerAd.removeAllViews()
+            containerAd.addView(adView)
+            containerAd.setBackgroundResource(R.drawable.bg_ad_splace)
+        }
+    }
+
 }

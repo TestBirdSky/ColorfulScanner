@@ -5,6 +5,7 @@ package com.skybird.colorfulscanner.bean
  * Describe:
  */
 data class CP1AdConListBean(val cp1_sp: ArrayList<CP1ConBean>,val cp1_a_f_i: ArrayList<CP1ConBean>,val cp1_filter_i: ArrayList<CP1ConBean>)
+data class CP1VAdConListBean(val cp1_h_n: ArrayList<CP1ConBean>,val cp1_r_n: ArrayList<CP1ConBean>,val cp1_ction_i: ArrayList<CP1ConBean>,val cp1_b_i: ArrayList<CP1ConBean>)
 data class CP1ConBean(
     val cp1_t: String,
     val cp1_pro: Int,

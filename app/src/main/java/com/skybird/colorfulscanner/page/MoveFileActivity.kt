@@ -49,6 +49,7 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
                         if (isSuccess) {
                             ToastUtils.showShort(R.string.move_file_success)
                             if (!showAd()) {
+                                setResult(RESULT_OK)
                                 finish()
                             }
                         } else {
@@ -77,7 +78,10 @@ class MoveFileActivity : BaseDataBindingAc<AcMoveFileBinding>() {
 
     private fun showAd(): Boolean {
         return CPAdUtils.showFileControlAd(this) {
-            if (CSApp.isAppResume) CPAdUtils.loadAddFileAd()
+            if (CSApp.isAppResume) {
+                CPAdUtils.loadAddFileAd()
+            }
+            setResult(RESULT_OK)
             finish()
         }
     }

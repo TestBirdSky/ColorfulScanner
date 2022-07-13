@@ -8,4 +8,8 @@ enum class Space(sName:String) {
     OPEN("open"),
     FILE("file"),
     FILTER("filter"),
+    HOME("home"),
+    RESULT("result"),
+    CONNECT("connect"),
+    BACK("back"),
 }

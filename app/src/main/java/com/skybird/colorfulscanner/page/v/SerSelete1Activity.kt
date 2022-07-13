@@ -9,6 +9,7 @@ import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.base.BaseDataBindingAc
 import com.skybird.colorfulscanner.bean.SListBean
+import com.skybird.colorfulscanner.cpad.CPAdUtils
 import com.skybird.colorfulscanner.databinding.ActivitySerS1Binding
 import com.skybird.colorfulscanner.dialog.DisconnectedTipsDialog
 import com.skybird.colorfulscanner.utils.*
@@ -72,16 +73,20 @@ class SerSelete1Activity : BaseDataBindingAc<ActivitySerS1Binding>() {
                         SListBean::class.java
                     ) as SListBean).cp_t_s
                 }
-                adapter.currentList=(DataConversionUtils.serBeanListToSerUiBean(serList))
+                adapter.currentList = (DataConversionUtils.serBeanListToSerUiBean(serList))
             } catch (e: Exception) {
-                adapter.currentList=(arrayListOf(SerUiBean(DEFAULT_SERVER_NAME, DEFAULT_SERVER_NAME)))
+                adapter.currentList =
+                    (arrayListOf(SerUiBean(DEFAULT_SERVER_NAME, DEFAULT_SERVER_NAME)))
             }
         }
-
+        CPAdUtils.loadBackAd()
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-
+        if (!CPAdUtils.showBackAd(this) {
+                finish()
+            }) {
+            super.onBackPressed()
+        }
     }
 }

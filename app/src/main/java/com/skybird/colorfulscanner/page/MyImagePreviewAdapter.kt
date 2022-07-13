@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
 import cc.shinichi.library.bean.ImageInfo
 import cc.shinichi.library.view.ImagePreviewAdapter
+import cc.shinichi.library.view.helper.FingerDragHelper
 import com.skybird.colorfulscanner.R
 import com.skybird.colorfulscanner.utils.LogCSE
 
@@ -25,7 +26,7 @@ class MyImagePreviewAdapter(
         val view = super.instantiateItem(container, position)
         if (view is View) {
             val progressBar = view.findViewById<ProgressBar>(R.id.progress_view)
-            progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.WHITE))
+                progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.WHITE))
         }
         return view
     }

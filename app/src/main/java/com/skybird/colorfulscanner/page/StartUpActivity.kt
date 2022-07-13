@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
     private var isHotReboot = false
     private var loadingTime = 0L
-    private val jumpMainPage = MutableLiveData(false)
 
     override fun layoutId(): Int {
         return R.layout.activity_start_up
@@ -56,16 +55,11 @@ class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
                     }
                     delay(1000)
                 }
+                binding.circularProgressBar.clearAnimation()
                 if (!isShowAd) {
                     toMainPage()
                 }
             }
-            jumpMainPage.observe(this, {
-                LogCSI("jumpMainPage--> $it --$isResume")
-                if (it) {
-                    toMainPage()
-                }
-            })
         } else {
             toMainPage()
         }
@@ -74,23 +68,23 @@ class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
     private fun loadAD() {
         loadingTime = System.currentTimeMillis()
         CPAdUtils.loadSplashAd()
-        CPAdUtils.loadFilterAd()
         CPAdUtils.loadAddFileAd()
     }
 
     private fun showAd(): Boolean {
         return CPAdUtils.showSplashAd(this) {
-            if (CSApp.isAppResume) {
-                jumpMainPage.value = true
-            } else {
-                finish()
+            lifecycleScope.launch {
+                delay(200)
+                toMainPage()
             }
         }
     }
 
     private fun toMainPage() {
         if (!isHotReboot) {
-            toNexAct(MainActivity::class.java)
+            if (CSApp.isAppResume) {
+                toNexAct(MainActivity::class.java)
+            }
         }
         finish()
     }

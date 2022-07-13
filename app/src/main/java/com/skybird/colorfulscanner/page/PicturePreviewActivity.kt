@@ -44,6 +44,7 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
             mAdapter = MyImagePreviewAdapter(this@PicturePreviewActivity, imageList)
             viewPager.adapter = mAdapter
             viewPager.currentItem = currentItemIndex
+            viewPager.pageMargin=ConvertUtils.dp2px(16f)
             setImageIdentifier()
             ivDel.setOnClickListener {
                 showDelDialog()
@@ -95,6 +96,7 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
                 info.thumbnailUrl = s
                 imageList.add(info)
             }
+            LogCSI("--->${imageList}")
             currentItemIndex = index
             val intent = Intent()
             intent.setClass(context, PicturePreviewActivity::class.java)

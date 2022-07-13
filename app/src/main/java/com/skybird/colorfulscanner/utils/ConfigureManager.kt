@@ -17,6 +17,7 @@ object ConfigureManager {
     private val localServers by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_ser_list.json") }
     private var remoteAdcListStr: String? = null
     private val localAdcListStr by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_ad.json") }
+    private val localAdcVListStr by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_v_adc.json") }
 
     fun getFastCity1Str(): String {
         if (remoteFC != null) {
@@ -37,6 +38,10 @@ object ConfigureManager {
             return remoteServers!!
         }
         return localAdcListStr
+    }
+
+    fun getAdc1VListStr():String{
+        return localAdcVListStr
     }
 
     fun loadRemoteConfigure() {
