@@ -286,9 +286,8 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
         curBitmap?.let {
             lifecycleScope.launch {
                 loadingDialog.show(supportFragmentManager, "dialog")
-                val fileName = "${System.currentTimeMillis()}--${Random.nextInt()}.jpeg"
                 val isSuccess =
-                    CSFileUtils.saveBitmapToFile(MainActivity.mCurFolderPath, fileName, it)
+                    CSFileUtils.saveBitmapToFile(MainActivity.mCurFolderPath, it)
                 loadingDialog.dismiss()
                 if (isSuccess) {
                     toNexAct(MainActivity::class.java)
@@ -336,7 +335,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
     }
 
     override fun onBackPressed() {
-        if (pageState == PageStatus.NORMAL) {
+        if (pageState == PageStatus.NORMAL || pageState == PageStatus.SHARE) {
             super.onBackPressed()
         } else {
             when (pageState) {

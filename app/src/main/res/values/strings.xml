@@ -51,7 +51,7 @@
     <string name="connect_status_disconnected">Disconnected succeeded</string>
     <string name="common_sure">Sure</string>
     <string name="connect_network_tips">Please connect to the Internet</string>
-    <string name="permission_open_tips">Permission is insufficient, do you want to go to the mobile phone system to enable the application permission?</string>
+    <string name="permission_open_tips">Lack of necessary permissions, do you want to go to the system to manually enable the permissions?</string>
     <string name="disconnected_tips">Are you currently in a connected state and need to disconnect after reconnecting? Are you sure you want to disconnect the current connection?</string>
 
 

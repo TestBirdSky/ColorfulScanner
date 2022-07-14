@@ -69,6 +69,11 @@ class StartUpActivity : BaseDataBindingAc<ActivityStartUpBinding>() {
         loadingTime = System.currentTimeMillis()
         CPAdUtils.loadSplashAd()
         CPAdUtils.loadAddFileAd()
+
+//        //v 1.0.2
+//        CPAdUtils.loadConnectionAd()
+//        CPAdUtils.loadHomeNAd()
+//        CPAdUtils.loadResultNAd()
     }
 
     private fun showAd(): Boolean {

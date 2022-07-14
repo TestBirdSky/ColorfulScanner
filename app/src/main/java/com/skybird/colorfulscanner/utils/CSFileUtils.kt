@@ -15,6 +15,7 @@ import android.os.Build
 import android.os.Environment
 import android.print.PrintAttributes
 import android.provider.MediaStore
+import android.util.Base64
 import com.blankj.utilcode.util.ConvertUtils
 import com.blankj.utilcode.util.FileIOUtils
 import com.blankj.utilcode.util.FileUtils
@@ -43,7 +44,17 @@ object CSFileUtils {
         return tempFolder + File.separator + fileName
     }
 
-    suspend fun saveBitmapToFile(filePath: String, fileName: String, bitmap: Bitmap): Boolean {
+    suspend fun saveBitmapToFile(filePath: String, bitmap: Bitmap): Boolean {
+        val eS = encodeFileName("${System.currentTimeMillis()}${Random.nextInt()}")
+        val fileName = "$eS.jpeg"
+        return saveBitmapToFile(filePath, fileName, bitmap)
+    }
+
+    private suspend fun saveBitmapToFile(
+        filePath: String,
+        fileName: String,
+        bitmap: Bitmap
+    ): Boolean {
         return withContext(Dispatchers.IO) {
             val file = File(filePath, fileName)
             FileIOUtils.writeFileFromBytesByStream(file, ConvertUtils.bitmap2Bytes(bitmap))
@@ -104,9 +115,20 @@ object CSFileUtils {
         destPath: String
     ): Boolean {
         val srcFile = FileUtils.getFileByPath(srcPath)
-        val tempDestPath = destPath + File.separator + srcFile.name
+        var tempDestPath = destPath + File.separator + srcFile.name
+        if (FileUtils.isFileExists(tempDestPath)) {
+            tempDestPath = modifyRepeatFile(tempDestPath, 1)
+        }
         LogCSI("tempDestPath$tempDestPath ---$srcPath")
         return FileUtils.move(srcPath, tempDestPath)
+    }
+
+    private fun modifyRepeatFile(filePath: String, addSuffix: Int): String {
+        val tempFilePath = filePath + "(${addSuffix})"
+        if (FileUtils.isFileExists(tempFilePath)) {
+            return modifyRepeatFile(filePath, addSuffix + 1)
+        }
+        return tempFilePath
     }
 
     const val REQUEST_CODE_DELETE_IMAGE = 1001
@@ -203,8 +225,7 @@ object CSFileUtils {
     suspend fun saveBitmapToAppDocumentsWithPDF(bitmap: Bitmap): File {
         return withContext(Dispatchers.IO) {
             val fileName =
-                "ColorfulScanner${System.currentTimeMillis()}${Random.nextInt()}.pdf"
-//            val path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
+                "ColorfulScanner-${System.currentTimeMillis()}${Random.nextInt()}.pdf"
             val path =
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).absolutePath
             saveBitmapToPdf(
@@ -258,4 +279,11 @@ object CSFileUtils {
         FileUtils.delete(tempFolder)
     }
 
+    private fun encodeFileName(str: String): String {
+        return base64(str)
+    }
+
+    private fun base64(str: String): String {
+        return Base64.encodeToString(str.toByteArray(), Base64.DEFAULT)
+    }
 }

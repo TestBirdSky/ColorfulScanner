@@ -131,6 +131,7 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
                 mViewModel.choiceSer()
             delay(1000)
             while (System.currentTimeMillis() - time < MAX_WAIT_TIME) {
+                delay(1000)
                 if (!isResume) {
                     mViewModel.reset()
                     stateChange(if (!isConnectedAction) BaseService.State.Connecting else BaseService.State.Stopping)
@@ -140,7 +141,6 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
                         break
                     }
                 }
-                delay(1000)
             }
             mViewModel.toggle(isConnectedAction)
         }
@@ -224,8 +224,9 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
 
     override fun onResume() {
         super.onResume()
-        if (curNativeAd == null) {
+        if (curNativeAd == null || CSApp.isNeedRefreshHomeNAd) {
             loadNativeAd()
+            CSApp.isNeedRefreshHomeNAd = false
         }
     }
 
@@ -292,6 +293,7 @@ class VMainActivity : BaseDataBindingAc<ActivityVMainBinding>() {
         binding.run {
             val lap = (containerAd.layoutParams as ConstraintLayout.LayoutParams).apply {
                 marginEnd = ConvertUtils.dp2px(16f)
+                topMargin = ConvertUtils.dp2px(-8f)
                 marginStart = ConvertUtils.dp2px(16f)
             }
             containerAd.layoutParams = lap

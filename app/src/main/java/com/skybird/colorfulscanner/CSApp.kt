@@ -17,6 +17,7 @@ class CSApp : Application() {
     companion object {
         lateinit var mApp: CSApp
         var isAppResume = false
+        var isNeedRefreshHomeNAd = false
     }
 
     override fun onCreate() {

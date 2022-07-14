@@ -103,7 +103,16 @@ class BottomShareDialog(val bitmap: Bitmap? = null, val filePath: String = "") :
                             ) {
                                 super.onDenied(permissions, never)
                                 if (never) {
-                                    ToastUtils.showShort(getString(R.string.failed_permission))
+                                    activity?.let {
+                                        OpenPermissionDialog({
+                                            XXPermissions.startPermissionActivity(
+                                                it,
+                                                permissions
+                                            )
+                                        }, {
+                                            ToastUtils.showShort(getString(R.string.failed_permission))
+                                        }).show(it.supportFragmentManager, "---")
+                                    }
                                 } else {
                                     ToastUtils.showShort(getString(R.string.failed_permission))
                                 }

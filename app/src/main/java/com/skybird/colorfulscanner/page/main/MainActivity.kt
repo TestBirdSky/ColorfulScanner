@@ -321,7 +321,7 @@ class MainActivity : BaseDataBindingAc<ActivityMainBinding>() {
 
     override fun onResume() {
         super.onResume()
-//        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
+        binding.ivVControl.setImageResource(if (CSApp.mApp.isConnectedV) R.drawable.ic_v_connected else R.drawable.ic_v_disconnected)
         if (isRefreshPage) {
             mViewModel.refreshFolderData(mCurFolderPath)
         }

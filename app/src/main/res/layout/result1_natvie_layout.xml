@@ -7,12 +7,12 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp">
+        android:padding="12dp">
 
         <com.google.android.gms.ads.nativead.MediaView
             android:id="@+id/media_view"
             android:layout_width="match_parent"
-            android:layout_height="142dp"
+            android:layout_height="177dp"
             android:layout_gravity="center_horizontal"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,7 +20,7 @@
             android:layout_width="23dp"
             android:layout_height="14dp"
             android:layout_gravity="center"
-            android:layout_marginTop="128dp"
+            android:layout_marginTop="165dp"
             android:src="@drawable/result_ad_tag"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -30,7 +30,7 @@
             android:layout_width="39dp"
             android:layout_height="39dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:adjustViewBounds="true"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -39,9 +39,9 @@
 
         <TextView
             android:id="@+id/ad_headline"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="12dp"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:singleLine="true"
@@ -49,14 +49,14 @@
             android:textSize="14sp"
             app:layout_constraintHorizontal_weight="1"
             app:layout_constraintLeft_toRightOf="@id/ad_app_icon"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/media_view"
             tools:text="App name43332333333333333333333433" />
 
-
         <TextView
             android:id="@+id/ad_body"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:gravity="bottom"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
@@ -64,6 +64,7 @@
             android:textColor="#9F9F9F"
             android:textSize="12sp"
             app:layout_constraintLeft_toRightOf="@id/ad_app_icon"
+            app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ad_headline" />
 
         <Button
@@ -71,7 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="46dp"
             android:layout_marginLeft="9dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="9dp"
             android:background="@drawable/re_ad_btn_bg"
             android:gravity="center"

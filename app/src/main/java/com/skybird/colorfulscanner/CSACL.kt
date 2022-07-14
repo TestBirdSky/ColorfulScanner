@@ -28,6 +28,7 @@ class CSACL : Application.ActivityLifecycleCallbacks {
         LogCSI("onActivityStarted activity==$activity")
         if (leaveAppTime != -1L && System.currentTimeMillis() - leaveAppTime >= 3000L) {
             leaveAppTime = -1L
+            CSApp.isNeedRefreshHomeNAd = true
             if (activity is StartUpActivity) {
 
             } else {
@@ -59,7 +60,7 @@ class CSACL : Application.ActivityLifecycleCallbacks {
         if (activity is AdActivity) {
             CoroutineScope(Dispatchers.Main).launch {
                 delay(2500L)
-                if (leaveAppTime != -1L && (!isAppResume)&& !activity.isFinishing) {
+                if (leaveAppTime != -1L && (!isAppResume) && !activity.isFinishing) {
                     LogCSI("onActivityStopped finish-->$activity")
                     activity.finish()
                 }
