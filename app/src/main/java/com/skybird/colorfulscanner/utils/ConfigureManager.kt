@@ -17,30 +17,34 @@ object ConfigureManager {
     private val localServers by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_ser_list.json") }
     private var remoteAdcListStr: String? = null
     private val localAdcListStr by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_ad.json") }
+    private var remoteVAdcListStr: String? = null
     private val localAdcVListStr by lazy { CSUtils.assetGsonFileStr(CSApp.mApp, "cp_v_adc.json") }
 
     fun getFastCity1Str(): String {
-        if (remoteFC != null) {
+        if (remoteFC?.isEmpty() == false) {
             return remoteFC!!
         }
         return localFC
     }
 
     fun getSer1ListStr(): String {
-        if (remoteServers != null) {
-            return remoteAdcListStr!!
+        if (remoteServers?.isEmpty() == false) {
+            return remoteServers!!
         }
         return localServers
     }
 
     fun getAdc1ListStr(): String {
-        if (remoteAdcListStr != null) {
+        if (remoteServers?.isEmpty() == false) {
             return remoteServers!!
         }
         return localAdcListStr
     }
 
-    fun getAdc1VListStr():String{
+    fun getAdc1VListStr(): String {
+        if (remoteVAdcListStr?.isEmpty()==false){
+            return  remoteVAdcListStr!!
+        }
         return localAdcVListStr
     }
 
@@ -51,6 +55,7 @@ object ConfigureManager {
 //                    remoteFC = Firebase.remoteConfig.getString("cp_f")
 //                    remoteServers = Firebase.remoteConfig.getString("cp_ser")
                     remoteAdcListStr = Firebase.remoteConfig.getString("cp_adc")
+//                    remoteVAdcListStr = Firebase.remoteConfig.getString("cp_v_adc")
                     AdConfigureCache.loadAdCList()
                     LogCSE("远程配置$remoteAdcListStr")
                 } else {
