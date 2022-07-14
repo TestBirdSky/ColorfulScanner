@@ -25,6 +25,9 @@ class CPAdmobImpl(val mApp:Application) {
             "n" -> {
                 loadNativeAd(id, loadFailed, loadSuccess)
             }
+            else ->{
+                loadFailed.invoke()
+            }
         }
     }
 

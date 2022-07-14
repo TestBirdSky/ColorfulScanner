@@ -1,16 +1,13 @@
 package com.skybird.colorfulscanner.page
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
-import cc.shinichi.library.bean.ImageInfo
-import cc.shinichi.library.view.ImagePreviewAdapter
-import cc.shinichi.library.view.helper.FingerDragHelper
+import androidx.viewpager.widget.PagerAdapter
+import cc.shinichi.library.view.photoview.PhotoView
+import com.bumptech.glide.Glide
 import com.skybird.colorfulscanner.R
-import com.skybird.colorfulscanner.utils.LogCSE
+import com.skybird.colorfulscanner.utils.LogCSI
 
 /**
  * Date：2022/7/7
@@ -18,33 +15,30 @@ import com.skybird.colorfulscanner.utils.LogCSE
  */
 class MyImagePreviewAdapter(
     private val activity: AppCompatActivity,
-    private val imageInfo: List<ImageInfo>
-) :
-    ImagePreviewAdapter(activity, imageInfo) {
-
+    var imageInfo: ArrayList<String>
+) : PagerAdapter() {
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
-        val view = super.instantiateItem(container, position)
-        if (view is View) {
-            val progressBar = view.findViewById<ProgressBar>(R.id.progress_view)
-                progressBar.setIndeterminateTintList(ColorStateList.valueOf(Color.WHITE))
-        }
-        return view
+        val convertView = View.inflate(activity, R.layout.image_preview_item, null)
+        val photoView = convertView.findViewById<PhotoView>(R.id.iv)
+        photoView.minimumScale = 0.8f
+        photoView.mediumScale = 1f
+        photoView.maximumScale = 5f
+        Glide.with(photoView).load(imageInfo[position])
+            .into(photoView)
+        container.addView(convertView)
+        return convertView
+    }
+
+    override fun isViewFromObject(view: View, `object`: Any): Boolean {
+        return view === `object`
+    }
+
+    override fun getCount(): Int {
+        LogCSI("getCount--->${imageInfo.size}")
+        return imageInfo.size
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
-        when {
-            imageInfo.isEmpty() -> {
-                activity.finish()
-                closePage()
-            }
-            position >= imageInfo.size -> {
-                LogCSE("数组越界---->")
-            }
-            else -> {
-                super.destroyItem(container, position, `object`)
-            }
-        }
-
 
     }
 }

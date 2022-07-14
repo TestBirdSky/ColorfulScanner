@@ -12,7 +12,7 @@ class AdDataWrap(
     private val reTryMaxNum: Int = 0 //超时间内 重新尝试请求的个数
 ) {
 
-    val name = space.name
+    val name = space.sName
     private var loadingTime = 0L
     private var reTryNum = 0
     var isLoading: Boolean = false

@@ -2,6 +2,7 @@ package com.skybird.colorfulscanner.page.picturedeal
 
 import android.graphics.Bitmap
 import android.net.Uri
+import android.view.MotionEvent
 import android.view.View
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -9,6 +10,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.SimpleTarget
 import com.bumptech.glide.request.transition.Transition
+import com.github.shadowsocks.bg.BaseService
 import com.gyf.immersionbar.ImmersionBar
 import com.skybird.colorfulscanner.CSApp
 import com.skybird.colorfulscanner.R
@@ -19,6 +21,7 @@ import com.skybird.colorfulscanner.dialog.BottomShareDialog
 import com.skybird.colorfulscanner.dialog.DeleteDialog
 import com.skybird.colorfulscanner.dialog.LoadingDialog
 import com.skybird.colorfulscanner.page.main.MainActivity
+import com.skybird.colorfulscanner.page.v.VMainActivity
 import com.skybird.colorfulscanner.toNexAct
 import com.skybird.colorfulscanner.utils.CSFileUtils
 import com.skybird.colorfulscanner.utils.LogCSI
@@ -110,6 +113,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
             }
             bottomNavigation.setOnItemSelectedListener { menuItem ->
                 LogCSI("onItemSlistener")
+                var isSuccess = true
                 when (menuItem.itemId) {
                     R.id.del -> {
                         showDelDialog()
@@ -134,15 +138,16 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                     R.id.share -> {
                         pageState = PageStatus.SHARE
                         curBitmap?.let {
-                            BottomShareDialog(it).show(supportFragmentManager, "bottom_dialog")
+                            val dialog = BottomShareDialog(it)
+                            dialog.show(supportFragmentManager, "bottom_dialog")
                         }
+                        isSuccess = false
                     }
                 }
-                true
+                isSuccess
             }
         }
     }
-
 
     private fun refreshPage() {
         when (pageState) {
@@ -250,7 +255,7 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
 
     private fun finishCurOperate() {
         when (pageState) {
-            PageStatus.NORMAL -> saveBitmapToLocal()
+            PageStatus.NORMAL, PageStatus.SHARE -> saveBitmapToLocal()
             PageStatus.TAILOR -> {
                 curBitmap = binding.cropImageView.croppedImage
                 pageState = PageStatus.NORMAL
@@ -273,7 +278,6 @@ class PictureDealActivity : BaseDataBindingAc<ActivityPictureDealBinding>() {
                     refreshPage()
                 }
             }
-            PageStatus.SHARE -> {}
         }
 
     }

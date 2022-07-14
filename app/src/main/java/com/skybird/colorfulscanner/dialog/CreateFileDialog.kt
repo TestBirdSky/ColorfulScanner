@@ -56,7 +56,7 @@ class CreateFileDialog(
         binding.run {
             tvTitle.text = title
             edit.setText(editContent)
-            edit.setSelection(editContent.length)
+            edit.setSelection(0, editContent.length)
             tvSave.setOnClickListener {
                 var s = edit.text.toString()
                 if (TextUtils.isEmpty(s)) {

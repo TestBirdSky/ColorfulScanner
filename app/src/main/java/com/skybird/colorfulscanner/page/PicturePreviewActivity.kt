@@ -41,10 +41,9 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
 
     override fun initData() {
         binding.run {
-            mAdapter = MyImagePreviewAdapter(this@PicturePreviewActivity, imageList)
-            viewPager.adapter = mAdapter
+            viewPager.adapter = MyImagePreviewAdapter(this@PicturePreviewActivity, imageList)
             viewPager.currentItem = currentItemIndex
-            viewPager.pageMargin=ConvertUtils.dp2px(16f)
+            viewPager.pageMargin = ConvertUtils.dp2px(16f)
             setImageIdentifier()
             ivDel.setOnClickListener {
                 showDelDialog()
@@ -54,7 +53,7 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
             }
             ivShare.setOnClickListener {
                 LogCSI("${imageList[currentItemIndex]}")
-                BottomShareDialog(null, imageList[currentItemIndex].originUrl).show(
+                BottomShareDialog(null, imageList[currentItemIndex]).show(
                     supportFragmentManager,
                     "bottomDialog"
                 )
@@ -83,19 +82,14 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
     }
 
     companion object {
-        private var imageList = arrayListOf<ImageInfo>()
+        private var imageList = arrayListOf<String>()
         private var currentItemIndex = 0
         fun activityStart(context: Context?, list: List<String>, index: Int) {
             if (context == null) {
                 return
             }
             imageList.clear()
-            for (s in list) {
-                val info = ImageInfo()
-                info.originUrl = s
-                info.thumbnailUrl = s
-                imageList.add(info)
-            }
+            imageList.addAll(list)
             LogCSI("--->${imageList}")
             currentItemIndex = index
             val intent = Intent()
@@ -154,13 +148,22 @@ class PicturePreviewActivity : BaseDataBindingAc<AcPicturePreviewBinding>() {
 
     private fun showDelDialog() {
         DeleteDialog(getString(R.string.delete_picture_tips)) {
+            val removeIndex = currentItemIndex
             if (currentItemIndex == imageList.size - 1) {
-                binding.viewPager.currentItem = 0
+                currentItemIndex = 0
             }
-            val bean = imageList.removeAt(currentItemIndex)
-            LogCSE("del -->${bean.originUrl}")
-            FileUtils.delete(bean.originUrl)
-            mAdapter.notifyDataSetChanged()
+            val bean = imageList.removeAt(removeIndex)
+            LogCSE("del -->${bean}")
+            FileUtils.delete(bean)
+            if (imageList.size == 0) {
+                finish()
+            } else {
+                binding.run {
+                    viewPager.adapter = MyImagePreviewAdapter(this@PicturePreviewActivity, imageList)
+                    viewPager.currentItem = currentItemIndex
+                    viewPager.pageMargin = ConvertUtils.dp2px(16f)
+                }
+            }
             setImageIdentifier()
         }.show(supportFragmentManager, "DialogDelete")
     }

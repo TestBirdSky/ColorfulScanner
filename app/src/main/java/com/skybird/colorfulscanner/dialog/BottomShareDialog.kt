@@ -2,6 +2,7 @@ package com.skybird.colorfulscanner.dialog
 
 import android.Manifest
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
@@ -63,11 +64,15 @@ class BottomShareDialog(val bitmap: Bitmap? = null, val filePath: String = "") :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.run {
+            isCancelable = false
+            setCanceledOnTouchOutside(false)
+        }
         binding.run {
             if (bitmap != null) {
                 iv.loadCornerImage(bitmap)
             } else {
-                iv.loadImage(filePath,true)
+                iv.loadImage(filePath, true)
             }
             ivClose.setOnClickListener {
                 dismiss()
